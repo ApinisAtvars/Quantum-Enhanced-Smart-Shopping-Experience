@@ -3,7 +3,7 @@
 
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn
 
 class GMF(nn.Module):
     def __init__(self, num_users: int, num_items: int, latent_dim: int):
@@ -38,30 +38,3 @@ class GMF(nn.Module):
 
         # return self.sigmoid(prediction)
         return prediction.squeeze() # Because the dataset uses explicit feedback
-
-    # def get_model(self, num_users:int, num_items:int, latent_dim:int, reg_params:list = None):
-    #     """
-    #     :param num_users: Number of users in the dataset
-    #     :param num_items: Number of items in the dataset
-    #     :param latent_dim: Size of embedding vector for both user and item embeddings
-    #     :param reg_params: (Unused) List of 2 ints - 1st L2 reg for user embeddings, 2nd L2 reg for item embeddings
-    #     """
-    #     usr_embedding = nn.Embedding(
-    #         num_embeddings=num_users,
-    #         embedding_dim=latent_dim,
-    #     )
-    #     itm_embedding = nn.Embedding(
-    #         num_embeddings=num_items,
-    #         embedding_dim=latent_dim
-    #     )
-
-    #     predict_vector = torch.mul(usr_embedding, itm_embedding)
-
-    #     model = nn.Sequential(
-    #         predict_vector,
-    #         nn.Linear(predict_vector.shape, 1),
-    #         nn.Sigmoid()
-    #     )
-
-    #     return model
-

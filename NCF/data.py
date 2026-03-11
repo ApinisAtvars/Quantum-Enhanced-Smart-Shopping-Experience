@@ -69,19 +69,40 @@ class SampleGenerator(object):
         assert train['userId'].nunique() == test['userId'].nunique()
         return train[['userId', 'itemId', 'rating']], test[['userId', 'itemId', 'rating']]
 
+    # Original implementation, consumes too much RAM when ml32m is used
+    # def _sample_negative(self, ratings):
+    #     """return all negative items & 100 sampled negative items"""
+    #     interact_status = ratings.groupby('userId')['itemId'].apply(set).reset_index().rename(
+    #         columns={'itemId': 'interacted_items'})
+    #     interact_status['negative_items'] = interact_status['interacted_items'].apply(lambda x: self.item_pool - x)
+    #     interact_status['negative_samples'] = interact_status['negative_items'].apply(lambda x: random.sample(list(x), 99))
+    #     return interact_status[['userId', 'negative_items', 'negative_samples']]
+
     def _sample_negative(self, ratings):
-        """return all negative items & 100 sampled negative items"""
+        """return interacted items & 99 sampled negative items (memory efficient)"""
         interact_status = ratings.groupby('userId')['itemId'].apply(set).reset_index().rename(
             columns={'itemId': 'interacted_items'})
-        interact_status['negative_items'] = interact_status['interacted_items'].apply(lambda x: self.item_pool - x)
-        interact_status['negative_samples'] = interact_status['negative_items'].apply(lambda x: random.sample(list(x), 99))
-        return interact_status[['userId', 'negative_items', 'negative_samples']]
+        item_pool_list = list(self.item_pool)
+        interact_status['negative_samples'] = interact_status['interacted_items'].apply(
+            lambda x: self._rejection_sample(item_pool_list, x, 99))
+        return interact_status[['userId', 'interacted_items', 'negative_samples']]
+
+    def _rejection_sample(self, pool_list, exclusion_set, n):
+        """Sample n items from pool_list not in exclusion_set via rejection sampling"""
+        samples = []
+        while len(samples) < n:
+            candidate = random.choice(pool_list)
+            if candidate not in exclusion_set:
+                samples.append(candidate)
+        return samples
 
     def instance_a_train_loader(self, num_negatives, batch_size):
         """instance train loader for one training epoch"""
         users, items, ratings = [], [], []
-        train_ratings = pd.merge(self.train_ratings, self.negatives[['userId', 'negative_items']], on='userId')
-        train_ratings['negatives'] = train_ratings['negative_items'].apply(lambda x: random.sample(list(x), num_negatives))
+        train_ratings = pd.merge(self.train_ratings, self.negatives[['userId', 'interacted_items']], on='userId')
+        item_pool_list = list(self.item_pool)
+        train_ratings['negatives'] = train_ratings['interacted_items'].apply(
+            lambda x: self._rejection_sample(item_pool_list, x, num_negatives))
         for row in train_ratings.itertuples():
             users.append(int(row.userId))
             items.append(int(row.itemId))

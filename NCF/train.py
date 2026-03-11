@@ -23,7 +23,7 @@ gmf_config = {'alias': 'gmf_factor8neg4-implict',
               'num_negative': 4,
               'l2_regularization': 0,  # 0.01
               'weight_init_gaussian': True,
-              'use_cuda': False,
+              'use_cuda': True,
               'use_bachify_eval': False,
               'device_id': 0,
               'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model'}
@@ -40,7 +40,7 @@ mlp_config = {'alias': 'mlp_factor8neg4_bz256_166432168_pretrain_reg_0.0000001',
               'layers': [16, 64, 32, 16, 8],  # layers[0] is the concat of latent user vector & latent item vector
               'l2_regularization': 0.0000001,  # MLP model is sensitive to hyper params
               'weight_init_gaussian': True,
-              'use_cuda': False,
+              'use_cuda': True,
               'use_bachify_eval': False,
               'device_id': 0,
               'pretrain': False,
@@ -48,19 +48,19 @@ mlp_config = {'alias': 'mlp_factor8neg4_bz256_166432168_pretrain_reg_0.0000001',
               'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model'}
 
 neumf_config = {'alias': 'neumf_factor8neg4',
-                'num_epoch': 200,
-                'batch_size': 1024,
+                'num_epoch': 1,
+                'batch_size': 256,
                 'optimizer': 'adam',
                 'adam_lr': 1e-3,
-                'num_users': 6040,
-                'num_items': 3706,
+                'num_users': None,  # to be set after loading data
+                'num_items': None,  # to be set after loading data
                 'latent_dim_mf': 8,
                 'latent_dim_mlp': 8,
                 'num_negative': 4,
                 'layers': [16, 64, 32, 16, 8],  # layers[0] is the concat of latent user vector & latent item vector
                 'l2_regularization': 0.0000001,
                 'weight_init_gaussian': True,
-                'use_cuda': False,
+                'use_cuda': True,
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,
@@ -70,20 +70,29 @@ neumf_config = {'alias': 'neumf_factor8neg4',
                 }
 
 # Load Data
-ml1m_dir = 'data/ml-1m/ratings.dat'
-ml1m_rating = pd.read_csv(ml1m_dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
+# ml1m_dir = 'data/ml-1m/ratings.dat'
+ml32m_dir = 'data/ncf_preprocessed/ratings.csv'
+# ml1m_rating = pd.read_csv(ml1m_dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
+ml32m_rating = pd.read_csv(ml32m_dir).rename(mapper={'userId': 'uid', 'itemId': 'mid'}, axis=1)
 # Reindex
-user_id = ml1m_rating[['uid']].drop_duplicates().reindex()
+user_id = ml32m_rating[['uid']].drop_duplicates().reindex()
 user_id['userId'] = np.arange(len(user_id))
-ml1m_rating = pd.merge(ml1m_rating, user_id, on=['uid'], how='left')
-item_id = ml1m_rating[['mid']].drop_duplicates()
+ml32m_rating = pd.merge(ml32m_rating, user_id, on=['uid'], how='left')
+item_id = ml32m_rating[['mid']].drop_duplicates()
 item_id['itemId'] = np.arange(len(item_id))
-ml1m_rating = pd.merge(ml1m_rating, item_id, on=['mid'], how='left')
-ml1m_rating = ml1m_rating[['userId', 'itemId', 'rating', 'timestamp']]
-print('Range of userId is [{}, {}]'.format(ml1m_rating.userId.min(), ml1m_rating.userId.max()))
-print('Range of itemId is [{}, {}]'.format(ml1m_rating.itemId.min(), ml1m_rating.itemId.max()))
+ml32m_rating = pd.merge(ml32m_rating, item_id, on=['mid'], how='left')
+ml32m_rating = ml32m_rating[['userId', 'itemId', 'rating', 'timestamp']]
+print('Range of userId is [{}, {}]'.format(ml32m_rating.userId.min(), ml32m_rating.userId.max()))
+print('Range of itemId is [{}, {}]'.format(ml32m_rating.itemId.min(), ml32m_rating.itemId.max()))
+
+# Set num_users and num_items in config
+neumf_config['num_users'] = ml32m_rating.userId.max() + 1
+neumf_config['num_items'] = ml32m_rating.itemId.max() + 1
+
+print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
+
 # DataLoader for training
-sample_generator = SampleGenerator(ratings=ml1m_rating)
+sample_generator = SampleGenerator(ratings=ml32m_rating)
 evaluate_data = sample_generator.evaluate_data
 # Specify the exact model
 # config = gmf_config

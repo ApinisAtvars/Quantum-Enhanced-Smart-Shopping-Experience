@@ -3,6 +3,8 @@ import numpy as np
 from NeuMF import NeuMFEngine
 from data import SampleGenerator
 
+RATING_TYPE = 'explicit'  # 'explicit' or 'implicit'
+
 neumf_config = {'alias': 'neumf_factor8neg4',
                 'num_epoch': 1,
                 'batch_size': 256,
@@ -22,7 +24,8 @@ neumf_config = {'alias': 'neumf_factor8neg4',
                 'pretrain': False,
                 'pretrain_mf': 'checkpoints/{}'.format('gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model'),
                 'pretrain_mlp': 'checkpoints/{}'.format('mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model'),
-                'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model'
+                'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
+                'are_ratings_explicit': RATING_TYPE == 'explicit'
                 }
 
 # Load Data
@@ -48,7 +51,8 @@ neumf_config['num_items'] = ml32m_rating.itemId.max() + 1
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 
 # DataLoader for training
-sample_generator = SampleGenerator(ratings=ml32m_rating)
+
+sample_generator = SampleGenerator(ratings=ml32m_rating, rating_type=RATING_TYPE)
 evaluate_data = sample_generator.evaluate_data
 # Specify the exact model
 # config = gmf_config
@@ -62,5 +66,9 @@ for epoch in range(config['num_epoch']):
     print('-' * 80)
     train_loader = sample_generator.instance_a_train_loader(config['num_negative'], config['batch_size'])
     engine.train_an_epoch(train_loader, epoch_id=epoch)
-    hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
-    engine.save(config['alias'], epoch, hit_ratio, ndcg)
+    if config['are_ratings_explicit']:
+        mse = engine.evaluate(evaluate_data, epoch_id=epoch)
+        engine.save(config['alias'], epoch, mse=mse)
+    else:
+        hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
+        engine.save(config['alias'], epoch, hit_ratio=hit_ratio, ndcg=ndcg)

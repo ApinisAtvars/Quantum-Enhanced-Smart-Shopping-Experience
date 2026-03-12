@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
+from typing import Literal, List
 
 random.seed(0)
 
@@ -29,23 +30,25 @@ class UserItemRatingDataset(Dataset):
 class SampleGenerator(object):
     """Construct dataset for NCF"""
 
-    def __init__(self, ratings):
+    def __init__(self, ratings, rating_type: Literal['explicit', 'implicit'] = 'implicit'):
         """
-        args:
+        Args:
             ratings: pd.DataFrame, which contains 4 columns = ['userId', 'itemId', 'rating', 'timestamp']
+            rating_type: Literal['explicit', 'implicit'], type of ratings
         """
         assert 'userId' in ratings.columns
         assert 'itemId' in ratings.columns
         assert 'rating' in ratings.columns
 
+        self.rating_type = rating_type
         self.ratings = ratings
         # explicit feedback using _normalize and implicit using _binarize
         # self.preprocess_ratings = self._normalize(ratings)
-        self.preprocess_ratings = self._binarize(ratings)
+        self.preprocess_ratings = self._binarize(ratings) if self.rating_type == 'implicit' else self._normalize(ratings)
         self.user_pool = set(self.ratings['userId'].unique())
         self.item_pool = set(self.ratings['itemId'].unique())
         # create negative item samples for NCF learning
-        self.negatives = self._sample_negative(ratings)
+        self.negatives = self._sample_negative(ratings) if self.rating_type == 'implicit' else None # Wasted time on negative sampling for explicit feedback
         self.train_ratings, self.test_ratings = self._split_loo(self.preprocess_ratings)
 
     def _normalize(self, ratings):
@@ -56,7 +59,7 @@ class SampleGenerator(object):
         return ratings
     
     def _binarize(self, ratings):
-        """binarize into 0 or 1, imlicit feedback"""
+        """binarize into 0 or 1, implicit feedback"""
         ratings = deepcopy(ratings)
         ratings.loc[ratings['rating'] > 0, 'rating'] = 1.0 # replace ratings['rating'][ratings['rating'] > 0] = 1.0
         return ratings
@@ -99,33 +102,47 @@ class SampleGenerator(object):
     def instance_a_train_loader(self, num_negatives, batch_size):
         """instance train loader for one training epoch"""
         users, items, ratings = [], [], []
-        train_ratings = pd.merge(self.train_ratings, self.negatives[['userId', 'interacted_items']], on='userId')
+        train_ratings = pd.merge(self.train_ratings, self.negatives[['userId', 'interacted_items']], on='userId') if self.rating_type == 'implicit' else self.train_ratings
         item_pool_list = list(self.item_pool)
-        train_ratings['negatives'] = train_ratings['interacted_items'].apply(
-            lambda x: self._rejection_sample(item_pool_list, x, num_negatives))
+        if self.rating_type == 'implicit':
+            train_ratings['negatives'] = train_ratings['interacted_items'].apply(
+                lambda x: self._rejection_sample(item_pool_list, x, num_negatives))
         for row in train_ratings.itertuples():
             users.append(int(row.userId))
             items.append(int(row.itemId))
             ratings.append(float(row.rating))
-            for i in range(num_negatives):
-                users.append(int(row.userId))
-                items.append(int(row.negatives[i]))
-                ratings.append(float(0))  # negative samples get 0 rating
+            if self.rating_type == 'implicit':
+                for i in range(num_negatives):
+                    users.append(int(row.userId))
+                    items.append(int(row.negatives[i]))
+                    ratings.append(float(0))  # negative samples get 0 rating
         dataset = UserItemRatingDataset(user_tensor=torch.LongTensor(users),
                                         item_tensor=torch.LongTensor(items),
                                         target_tensor=torch.FloatTensor(ratings))
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     @property
-    def evaluate_data(self):
-        """create evaluate data"""
-        test_ratings = pd.merge(self.test_ratings, self.negatives[['userId', 'negative_samples']], on='userId')
-        test_users, test_items, negative_users, negative_items = [], [], [], []
-        for row in test_ratings.itertuples():
-            test_users.append(int(row.userId))
-            test_items.append(int(row.itemId))
-            for i in range(len(row.negative_samples)):
-                negative_users.append(int(row.userId))
-                negative_items.append(int(row.negative_samples[i]))
-        return [torch.LongTensor(test_users), torch.LongTensor(test_items), torch.LongTensor(negative_users),
-                torch.LongTensor(negative_items)]
+    def evaluate_data(self) -> List[torch.LongTensor]:
+        """Create evaluation data
+
+        Returns:
+            A list of tensors containing evaluation data.\n
+            If rating_type is 'implicit', returns [test_users, test_items, negative_users, negative_items].\n
+            If rating_type is 'explicit', returns [test_users, test_items, test_ratings].
+        """
+        if self.rating_type == 'implicit':
+            test_ratings = pd.merge(self.test_ratings, self.negatives[['userId', 'negative_samples']], on='userId')
+            test_users, test_items, negative_users, negative_items = [], [], [], []
+            for row in test_ratings.itertuples():
+                test_users.append(int(row.userId))
+                test_items.append(int(row.itemId))
+                for i in range(len(row.negative_samples)):
+                    negative_users.append(int(row.userId))
+                    negative_items.append(int(row.negative_samples[i]))
+            return [torch.LongTensor(test_users), torch.LongTensor(test_items), torch.LongTensor(negative_users),
+                    torch.LongTensor(negative_items)]
+        else:
+            test_users = torch.LongTensor(self.test_ratings['userId'].tolist())
+            test_items = torch.LongTensor(self.test_ratings['itemId'].tolist())
+            test_ratings = torch.FloatTensor(self.test_ratings['rating'].tolist())
+            return [test_users, test_items, test_ratings]

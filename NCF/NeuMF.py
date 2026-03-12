@@ -14,6 +14,7 @@ class NeuMF(torch.nn.Module):
         self.num_items = config['num_items']
         self.latent_dim_mf = config['latent_dim_mf']
         self.latent_dim_mlp = config['latent_dim_mlp']
+        self.are_ratings_explicit = config['are_ratings_explicit']
 
         self.embedding_user_mlp = torch.nn.Embedding(num_embeddings=self.num_users, embedding_dim=self.latent_dim_mlp)
         self.embedding_item_mlp = torch.nn.Embedding(num_embeddings=self.num_items, embedding_dim=self.latent_dim_mlp)
@@ -25,7 +26,7 @@ class NeuMF(torch.nn.Module):
             self.fc_layers.append(torch.nn.Linear(in_size, out_size))
 
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
-        self.logistic = torch.nn.Sigmoid()
+        self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
 
         # Initialize model parameters with a Gaussian distribution (with a mean of 0 and standard deviation of 0.01)
         if config['weight_init_gaussian']:
@@ -49,7 +50,10 @@ class NeuMF(torch.nn.Module):
 
         vector = torch.cat([mlp_vector, mf_vector], dim=-1)
         logits = self.affine_output(vector)
-        rating = self.logistic(logits)
+        if self.are_ratings_explicit:
+            rating = logits.view(-1)
+        else:
+            rating = self.logistic(logits)
         return rating
 
     def init_weight(self):

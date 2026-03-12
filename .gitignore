@@ -177,5 +177,5 @@ pyrightconfig.json
 
 data/
 
-runs/
+# runs/
 checkpoints/

@@ -4,6 +4,7 @@ from tqdm import tqdm
 from tensorboardX import SummaryWriter
 from utils import save_checkpoint, use_optimizer
 from metrics import MetronAtK
+from tqdm import tqdm
 
 
 class Engine(object):
@@ -39,12 +40,11 @@ class Engine(object):
         assert hasattr(self, 'model'), 'Please specify the exact model !'
         self.model.train()
         total_loss = 0
-        for batch_id, batch in enumerate(train_loader):
+        for batch in tqdm(train_loader, leave=False):
             assert isinstance(batch[0], torch.LongTensor)
             user, item, rating = batch[0], batch[1], batch[2]
             rating = rating.float()
             loss = self.train_single_batch(user, item, rating)
-            print('[Training Epoch {}] Batch {}, Loss {}'.format(epoch_id, batch_id, loss))
             total_loss += loss
         self._writer.add_scalar('model/loss', total_loss, epoch_id)
 

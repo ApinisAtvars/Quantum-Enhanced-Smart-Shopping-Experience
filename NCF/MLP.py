@@ -1,6 +1,6 @@
 import torch
-from gmf import GMF
-from engine import Engine
+from GMF import GMF
+from Engine import Engine
 from utils import use_cuda, resume_checkpoint
 from torch import nn
 

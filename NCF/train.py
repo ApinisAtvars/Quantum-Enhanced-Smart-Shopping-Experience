@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from neumf import NeuMFEngine
+from NeuMF import NeuMFEngine
 from data import SampleGenerator
 
 neumf_config = {'alias': 'neumf_factor8neg4',

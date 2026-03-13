@@ -1,2 +1,15 @@
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+seaborn
+umap-learn
+
+qiskit
+qiskit-aer
+pennylane
+torch
+
 dwave-ocean-sdk
 dwave-scikit-learn-plugin

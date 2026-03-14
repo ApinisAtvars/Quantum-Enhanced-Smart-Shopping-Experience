@@ -1,0 +1,6 @@
+{
+    "factors": 50,
+    "reg": 0.1,
+    "iterations": 15,
+    "seed": 42
+}

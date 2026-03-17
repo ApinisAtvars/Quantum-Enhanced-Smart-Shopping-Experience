@@ -9,8 +9,8 @@ import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
-neumf_config = {'alias': 'neumf_initial_test_implicit',
-                'num_epoch': 2, # original 100, less now because an epoch takes 40 min for implicit NeuMF
+neumf_config = {'alias': '1_implicit_ml1m',
+                'num_epoch': 100, # original 100, less now because an epoch takes 40 min for implicit NeuMF
                 'batch_size': 256, # original 256
                 'optimizer': 'adam', # original 'adam'
                 'adam_lr': 1e-3, # original 0.001
@@ -34,37 +34,54 @@ neumf_config = {'alias': 'neumf_initial_test_implicit',
 
 # Load Data
 # ml1m_dir = 'data/ml-1m/ratings.dat'
-ml32m_dir = 'data/ncf_preprocessed/ratings.csv'
+# ml32m_dir = 'data/ncf_preprocessed/ratings.csv'
 # ml1m_rating = pd.read_csv(ml1m_dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
-ml32m_rating = pd.read_csv(ml32m_dir).rename(mapper={'userId': 'uid', 'itemId': 'mid'}, axis=1)
-# Reindex
-user_id = ml32m_rating[['uid']].drop_duplicates().reindex()
-user_id['userId'] = np.arange(len(user_id))
-ml32m_rating = pd.merge(ml32m_rating, user_id, on=['uid'], how='left')
-item_id = ml32m_rating[['mid']].drop_duplicates()
-item_id['itemId'] = np.arange(len(item_id))
-ml32m_rating = pd.merge(ml32m_rating, item_id, on=['mid'], how='left')
-ml32m_rating = ml32m_rating[['userId', 'itemId', 'rating', 'timestamp']]
-print('Range of userId is [{}, {}]'.format(ml32m_rating.userId.min(), ml32m_rating.userId.max()))
-print('Range of itemId is [{}, {}]'.format(ml32m_rating.itemId.min(), ml32m_rating.itemId.max()))
 
-# Set num_users and num_items in config
-neumf_config['num_users'] = ml32m_rating.userId.max() + 1
-neumf_config['num_items'] = ml32m_rating.itemId.max() + 1
+def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
+    """
+    Preprocess the data, and set the number of users and items in the NeuMF config based on dataset size.
+
+    Args:
+        dir: The path to the ml32m dataset
+    """
+    if is_ml1m:
+        dataset = pd.read_csv(dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
+    else:
+        dataset = pd.read_csv(dir).rename(mapper={'userId': 'uid', 'itemId': 'mid'}, axis=1)
+    user_id = dataset[['uid']].drop_duplicates().reindex()
+    user_id['userId'] = np.arange(len(user_id))
+    dataset = pd.merge(dataset, user_id, on=['uid'], how='left')
+    item_id = dataset[['mid']].drop_duplicates()
+    item_id['itemId'] = np.arange(len(item_id))
+    dataset = pd.merge(dataset, item_id, on=['mid'], how='left')
+    dataset = dataset[['userId', 'itemId', 'rating', 'timestamp']]
+    print('Range of userId is [{}, {}]'.format(dataset.userId.min(), dataset.userId.max()))
+    print('Range of itemId is [{}, {}]'.format(dataset.itemId.min(), dataset.itemId.max()))
+
+    neumf_config['num_users'] = dataset.userId.max() + 1
+    neumf_config['num_items'] = dataset.itemId.max() + 1
+
+    return dataset
+
+
+dataset = preprocess_data("data/ml-1m/ratings.dat", True)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 
 # DataLoader for training
 
-sample_generator = SampleGenerator(ratings=ml32m_rating, rating_type=RATING_TYPE)
+sample_generator = SampleGenerator(ratings=dataset, rating_type=RATING_TYPE)
 evaluate_data = sample_generator.evaluate_data
-# Specify the exact model
-# config = gmf_config
-# engine = GMFEngine(config)
-# config = mlp_config
-# engine = MLPEngine(config)
+
+train_size = len(sample_generator.train_ratings)
+test_size = len(sample_generator.test_ratings)
+
 config = neumf_config
+
 engine = NeuMFEngine(config)
+
+engine.log_data_split(train_size=train_size, test_size=test_size)
+
 for epoch in range(config['num_epoch']):
     print('Epoch {} starts !'.format(epoch))
     print('-' * 80)

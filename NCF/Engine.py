@@ -27,6 +27,20 @@ class Engine(object):
 
         self.crit = torch.nn.MSELoss() if config['are_ratings_explicit'] else torch.nn.BCELoss()
 
+    def log_data_split(self, train_size, test_size):
+        """Log train/test split statistics once per run."""
+        total_size = train_size + test_size
+        if total_size == 0:
+            return
+
+        train_pct = (train_size / total_size) * 100.0
+        test_pct = (test_size / total_size) * 100.0
+
+        self._writer.add_scalar('data_split/train_percent', train_pct, 0)
+        self._writer.add_scalar('data_split/test_percent', test_pct, 0)
+        self._writer.add_scalar('data_split/train_size', train_size, 0)
+        self._writer.add_scalar('data_split/test_size', test_size, 0)
+
     def train_single_batch(self, users, items, ratings):
         assert hasattr(self, 'model'), 'Please specify the exact model !'
         if self.config['use_cuda'] is True:
@@ -43,13 +57,16 @@ class Engine(object):
         assert hasattr(self, 'model'), 'Please specify the exact model !'
         self.model.train()
         total_loss = 0
-        for batch in tqdm(train_loader, leave=False):
+        num_batches = len(train_loader)
+        for i, batch in enumerate(tqdm(train_loader, leave=False)):
             assert isinstance(batch[0], torch.LongTensor)
             user, item, rating = batch[0], batch[1], batch[2]
             rating = rating.float()
             loss = self.train_single_batch(user, item, rating)
+            global_step = i + epoch_id * num_batches
+            self._writer.add_scalar('model/individual_loss', loss, global_step)
             total_loss += loss
-        self._writer.add_scalar('model/loss', total_loss, epoch_id)
+        self._writer.add_scalar('model/loss_per_epoch', total_loss, epoch_id)
 
     def _predict(self, users, items):
         if self.config['use_bachify_eval'] == False:

@@ -1,8 +1,9 @@
 import torch
 from Engine import Engine
 from utils import use_cuda, resume_checkpoint
-from torch import nn
+from Dressed_Quantum_Net import DressedQuantumNetwork
 
+from torch import nn
 import pennylane as qml
 
 
@@ -28,9 +29,10 @@ class QVCNeuMF(torch.nn.Module):
 
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
-        # TODO integrate Dressed_Quantum_Net in here. I think I may have thought about this the wrong way as the output of the MLP module is 8 not 1, and it's concat with MF and then passed through final prediction layer
+
+        self.quantum_network = DressedQuantumNetwork(config) # Assigned to affine_output after weights are loaded
         # Initialize model parameters with a Gaussian distribution (with a mean of 0 and standard deviation of 0.01)
-        if config['weight_init_gaussian']:
+        if config['weight_init_gaussian'] and not config['pretrain']:
             for sm in self.modules():
                 if isinstance(sm, (nn.Embedding, nn.Linear)):
                     print(sm)
@@ -60,19 +62,30 @@ class QVCNeuMF(torch.nn.Module):
         return rating
     #endregion
 
-class NeuMFEngine(Engine):
+class QVCNeuMFEngine(Engine):
     """Engine for training & evaluating GMF model"""
     def __init__(self, config):
         self.model = QVCNeuMF(config)
         if config['use_cuda'] is True:
             use_cuda(True, config['device_id'])
             self.model.cuda()
-        super(NeuMFEngine, self).__init__(config)
-        print(self.model)
-        print(self.model.weights)
-
         if config['pretrain']:
-            self.model.load_pretrain_weights()
+            resume_checkpoint(self.model, model_dir=config['pretrain_neumf_dir'])
+            
+        # freeze classical network weights
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+        # switch out affine output for dressed quantum circuit after loading weights
+        self.model.affine_output = self.model.quantum_network 
+        
+        # ensure quantum network parameters are trainable
+        for param in self.model.affine_output.parameters():
+            param.requires_grad = True
+            
+        # initialize engine (optimizer, etc.) after setting up the model's frozen/trainable parameters
+        super(QVCNeuMFEngine, self).__init__(config)
+        print(self.model)
 
 
 if __name__=="__main__":

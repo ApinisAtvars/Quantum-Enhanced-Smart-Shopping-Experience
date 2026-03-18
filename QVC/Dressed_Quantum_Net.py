@@ -3,33 +3,31 @@ import pennylane as qml
 from torch import nn
 import torch
 
-config = {
-        "n_qubits": 8,              # Number of neurons in final MLP layer
-        "learning_rate": 0.0003,    # Same as NeuMF
-        "batch_size": 256,          # Same as NeuMF
-        "num_epochs": 10,           # For testing
-        "q_depth": 6,               # Number of variational layers
-        "gamma_lr_scheduler": 0.1,  # Learning rate reduction applier every 10 epochs
-        "q_delta": 0.01,            # Initial spread of random quantum weights
-    }
-
 class DressedQuantumNetwork(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.quantum_device = qml.device('default.qubit', wires=config['n_qubits'])
-        self.q_params = nn.Parameter(config['q_delta'] * torch.randn(config["q_depth"] * config["n_qubits"]))
-        self.post_net = nn.Linear(config["n_qubits"], 1)
+        self.quantum_device = qml.device('default.qubit', wires=self.config['n_qubits'])
+        self.q_params = nn.Parameter(self.config['q_delta'] * torch.randn(self.config["q_depth"] * self.config["n_qubits"]))
+
+        # Traditional layers
+        self.pre_net = nn.Linear(self.config['layers'][-1] + self.config['latent_dim_mf'], self.config['n_qubits'])
+        self.post_net = nn.Linear(self.config["n_qubits"], 1)
+        
+        
         self.quantum_net = qml.QNode(self.quantum_net, self.quantum_device)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+
     def forward(self, input_features):
+        q_in = self.pre_net(input_features)
+
         q_out = torch.Tensor(0, self.config["n_qubits"])
         q_out = q_out.to(self.device)
         
-        for elem in input_features:
+        for elem in q_in:
             q_out_elem = torch.hstack(self.quantum_net(elem, self.q_params)).float().unsqueeze(0)
-            q_out = torch.cat(q_out, q_out_elem)
+            q_out = torch.cat((q_out, q_out_elem))
         
         return self.post_net(q_out)
 

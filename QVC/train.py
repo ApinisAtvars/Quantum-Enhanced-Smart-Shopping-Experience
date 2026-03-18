@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from NeuMF_QVC import NeuMFEngine
+from NeuMF_QVC import QVCNeuMFEngine
 from data import SampleGenerator
 
 # Temp for automatically pushing when done training
@@ -9,27 +9,29 @@ import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
-neumf_config = {'alias': 'test',
-                'num_epoch': 100, # original 100, less now because an epoch takes 40 min for implicit NeuMF
-                'batch_size': 256, # original 256
-                'optimizer': 'adam', # original 'adam'
-                'adam_lr': 1e-3, # original 0.001
-                'num_users': None,  # to be set after loading data
-                'num_items': None,  # to be set after loading data
-                'latent_dim_mf': 8, # original 8
-                'latent_dim_mlp': 8, # original 8
-                'num_negative': 4, # original 4
-                'layers': [16, 64, 32, 16, 8],  # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
-                'l2_regularization': 0.0000001, # original 0
+neumf_config = {'alias': 'qvc_neumf',
+                'num_epoch': 10,                    # original 100, less now because an epoch takes 40 min for implicit NeuMF
+                'batch_size': 256,                  # original 256
+                'optimizer': 'adam',                # original 'adam'
+                'adam_lr': 1e-3,                    # original 0.001
+                'num_users': None,                  # to be set after loading data
+                'num_items': None,                  # to be set after loading data
+                'latent_dim_mf': 8,                 # original 8
+                'latent_dim_mlp': 8,                # original 8
+                'num_negative': 4,                  # original 4
+                'layers': [16, 64, 32, 16, 8],      # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
+                'l2_regularization': 0.0000001,     # original 0
                 'weight_init_gaussian': True,
                 'use_cuda': True,
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,
-                'pretrain_mf': 'checkpoints/{}'.format('gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model'),
-                'pretrain_mlp': 'checkpoints/{}'.format('mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model'),
+                'pretrain_neumf_dir': r"checkpoints\1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
-                'are_ratings_explicit': RATING_TYPE == 'explicit'
+                'are_ratings_explicit': RATING_TYPE == 'explicit',
+                'n_qubits': 4,                   # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
+                'q_depth': 6,                       # Number of variational layers
+                'q_delta': 0.01                     # Initial spread of random quantum weights
                 }
 
 # Load Data
@@ -78,7 +80,7 @@ test_size = len(sample_generator.test_ratings)
 
 config = neumf_config
 
-engine = NeuMFEngine(config)
+engine = QVCNeuMFEngine(config)
 
 engine.log_data_split(train_size=train_size, test_size=test_size)
 

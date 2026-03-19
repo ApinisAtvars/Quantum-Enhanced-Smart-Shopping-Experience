@@ -179,3 +179,5 @@ data/
 
 runs/
 checkpoints/
+
+.ubuntu_venv/

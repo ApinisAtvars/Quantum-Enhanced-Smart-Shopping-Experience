@@ -8,10 +8,15 @@ import subprocess
 import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
-
-neumf_config = {'alias': 'qvc_neumf',
+'''
+e - epoch
+b - batch size
+nq - num qubits
+qd - qubit depth
+'''
+neumf_config = {'alias': '19_03_different_arch_subset_e10_b8_nq3_qd1',
                 'num_epoch': 10,                    # original 100, less now because an epoch takes 40 min for implicit NeuMF
-                'batch_size': 256,                  # original 256
+                'batch_size': 8,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
                 'adam_lr': 1e-3,                    # original 0.001
                 'num_users': None,                  # to be set after loading data
@@ -29,16 +34,12 @@ neumf_config = {'alias': 'qvc_neumf',
                 'pretrain_neumf_dir': r"checkpoints\1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
-                'n_qubits': 4,                   # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
-                'q_depth': 6,                       # Number of variational layers
+                'n_qubits': 3,                      # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
+                'q_depth': 1,                       # Number of variational layers
                 'q_delta': 0.01                     # Initial spread of random quantum weights
                 }
 
 # Load Data
-# ml1m_dir = 'data/ml-1m/ratings.dat'
-# ml32m_dir = 'data/ncf_preprocessed/ratings.csv'
-# ml1m_rating = pd.read_csv(ml1m_dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
-
 def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     """
     Preprocess the data, and set the number of users and items in the NeuMF config based on dataset size.
@@ -66,7 +67,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data("data/ml-1m/ratings.dat", True)
+dataset = preprocess_data("data/ncf_preprocessed/ratings_subset.csv", False)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

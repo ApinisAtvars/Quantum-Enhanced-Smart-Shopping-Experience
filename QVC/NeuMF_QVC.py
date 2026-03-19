@@ -27,6 +27,8 @@ class QVCNeuMF(torch.nn.Module):
         for idx, (in_size, out_size) in enumerate(zip(config['layers'][:-1], config['layers'][1:])):
             self.fc_layers.append(torch.nn.Linear(in_size, out_size))
 
+        self.final_mlp_ff_layer = torch.nn.Linear(in_features=config['layers'][-2], out_features=config['latent_dim_mlp'])
+
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
 
@@ -49,9 +51,11 @@ class QVCNeuMF(torch.nn.Module):
         mlp_vector = torch.cat([user_embedding_mlp, item_embedding_mlp], dim=-1)  # the concat latent vector
         mf_vector =torch.mul(user_embedding_mf, item_embedding_mf)
 
-        for idx, _ in enumerate(range(len(self.fc_layers))):
+        for idx, _ in enumerate(range(len(self.fc_layers)-1)):
             mlp_vector = self.fc_layers[idx](mlp_vector)
             mlp_vector = torch.nn.ReLU()(mlp_vector)
+        
+        mlp_vector = self.final_mlp_ff_layer(mlp_vector)
 
         vector = torch.cat([mlp_vector, mf_vector], dim=-1)
         logits = self.affine_output(vector)
@@ -72,13 +76,16 @@ class QVCNeuMFEngine(Engine):
         if config['pretrain']:
             resume_checkpoint(self.model, model_dir=config['pretrain_neumf_dir'])
             
-        # freeze classical network weights
+        # Freeze only the embedding layers.
         for param in self.model.parameters():
-            param.requires_grad = False
+            if param in [self.model.embedding_user_mlp, self.model.embedding_item_mlp, self.model.embedding_user_mf, self.model.embedding_item_mf]:
+                param.requires_grad = False
 
-        # switch out affine output for dressed quantum circuit after loading weights
-        self.model.affine_output = self.model.quantum_network 
-        
+
+        # Insert the quantum circuit before the final affine output layer
+        self.model.final_mlp_ff_layer = nn.Sequential(self.model.final_mlp_ff_layer, 
+                                                      self.model.quantum_network)
+
         # ensure quantum network parameters are trainable
         for param in self.model.affine_output.parameters():
             param.requires_grad = True
@@ -114,4 +121,5 @@ if __name__=="__main__":
                     'are_ratings_explicit': RATING_TYPE == 'explicit'
                     }
     
-    NeuMFEngine(neumf_config)
+    # NeuMFEngine(neumf_config)
+    qml.StronglyEntanglingLayers

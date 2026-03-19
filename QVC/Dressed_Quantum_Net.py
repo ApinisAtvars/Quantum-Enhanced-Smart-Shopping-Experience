@@ -7,15 +7,16 @@ class DressedQuantumNetwork(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.quantum_device = qml.device('default.qubit', wires=self.config['n_qubits'])
-        self.q_params = nn.Parameter(self.config['q_delta'] * torch.randn(self.config["q_depth"] * self.config["n_qubits"]))
+        self.quantum_device = qml.device('lightning.qubit', wires=self.config['n_qubits'])
+        num_params = self.config["q_depth"] * self.config["n_qubits"] * 3
+        self.q_params = nn.Parameter(self.config['q_delta'] * torch.randn(num_params))
 
         # Traditional layers
-        self.pre_net = nn.Linear(self.config['layers'][-1] + self.config['latent_dim_mf'], self.config['n_qubits'])
-        self.post_net = nn.Linear(self.config["n_qubits"], 1)
+        self.pre_net = nn.Linear(self.config['layers'][-1], self.config['n_qubits'])
+        self.post_net = nn.Linear(self.config["n_qubits"], self.config['latent_dim_mlp'])
         
         
-        self.quantum_net = qml.QNode(self.quantum_net, self.quantum_device)
+        self.quantum_net = qml.QNode(self.strongly_entangling_layers, self.quantum_device, interface="torch", diff_method="best")
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -58,6 +59,8 @@ class DressedQuantumNetwork(nn.Module):
         for i in range(1, nqubits - 1, 2):  # Loop over odd indices:  i=1,3,...N-3
             qml.CNOT(wires=[i, i + 1])
 
+    # 1st option from source (1st line)
+    # Not very good
     def quantum_net(self, q_input_features, q_weights_flat):
         """
         The variational quantum circuit.
@@ -79,6 +82,24 @@ class DressedQuantumNetwork(nn.Module):
 
         # Expectation values in the Z basis
         exp_vals = [qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])]
+        return tuple(exp_vals)
+    
+    # 2nd option StronglyEntanglingLayers & AngleEmbedding (commented out in the code below)
+    def strongly_entangling_layers(self, q_input_features, q_weights_flat):
+        """
+        The variational quantum circuit using StronglyEntanglingLayers.
+        """
+        # 1. Reshape weights to (q_depth, n_qubits, 3)
+        q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"], 3)
+        
+        # 2. Embed features using AngleEmbedding
+        qml.AngleEmbedding(features=q_input_features, wires=range(self.config["n_qubits"]), rotation='Y')
+
+        # 3. Apply the Trainable Ansatz
+        qml.StronglyEntanglingLayers(weights=q_weights, wires=range(self.config["n_qubits"]))
+
+        # 4. Measure
+        exp_vals =[qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])]
         return tuple(exp_vals)
     
 if __name__=="__main__":

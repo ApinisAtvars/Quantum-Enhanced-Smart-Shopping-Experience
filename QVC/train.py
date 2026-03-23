@@ -13,19 +13,23 @@ e - epoch
 b - batch size
 nq - num qubits
 qd - qubit depth
+
+
 '''
-neumf_config = {'alias': '19_03_different_arch_subset_e10_b8_nq3_qd1',
+neumf_config = {'alias': '20_03_adam_subset_dense_nq4',
                 'num_epoch': 10,                    # original 100, less now because an epoch takes 40 min for implicit NeuMF
-                'batch_size': 8,                    # original 256
+                'batch_size': 16,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
                 'adam_lr': 1e-3,                    # original 0.001
+                # 'sgd_lr': 0.003,                    # new for sgd
+                # 'sgd_momentum': 0,                  # disable momentum for finetuning
                 'num_users': None,                  # to be set after loading data
                 'num_items': None,                  # to be set after loading data
                 'latent_dim_mf': 8,                 # original 8
                 'latent_dim_mlp': 8,                # original 8
                 'num_negative': 4,                  # original 4
                 'layers': [16, 64, 32, 16, 8],      # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
-                'l2_regularization': 0.0000001,     # original 0
+                'l2_regularization': 0,     # original 0
                 'weight_init_gaussian': True,
                 'use_cuda': True,
                 'use_bachify_eval': True,
@@ -34,9 +38,10 @@ neumf_config = {'alias': '19_03_different_arch_subset_e10_b8_nq3_qd1',
                 'pretrain_neumf_dir': r"checkpoints\1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
-                'n_qubits': 3,                      # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
-                'q_depth': 1,                       # Number of variational layers
-                'q_delta': 0.01                     # Initial spread of random quantum weights
+                'n_qubits': 4,                      # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
+                'q_depth': 2,                       # Number of variational layers
+                'q_delta': 0.01,                     # Initial spread of random quantum weights
+                'description': "Changed optimizer back to Adam, added 16 neuron dense layer after DQN. Used subset of 1000 users. Increased qubits to 4"
                 }
 
 # Load Data

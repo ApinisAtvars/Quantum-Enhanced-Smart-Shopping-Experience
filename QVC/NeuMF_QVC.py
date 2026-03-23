@@ -87,7 +87,7 @@ class QVCNeuMFEngine(Engine):
                                                       self.model.quantum_network)
 
         # ensure quantum network parameters are trainable
-        for param in self.model.affine_output.parameters():
+        for param in self.model.final_mlp_ff_layer.parameters():
             param.requires_grad = True
             
         # initialize engine (optimizer, etc.) after setting up the model's frozen/trainable parameters

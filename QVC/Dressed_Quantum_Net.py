@@ -13,8 +13,11 @@ class DressedQuantumNetwork(nn.Module):
 
         # Traditional layers
         self.pre_net = nn.Linear(self.config['layers'][-1], self.config['n_qubits'])
-        self.post_net = nn.Linear(self.config["n_qubits"], self.config['latent_dim_mlp'])
-        
+        self.post_net = nn.Sequential(
+            nn.Linear(self.config["n_qubits"], 16),
+            nn.ReLU(),
+            nn.Linear(16, self.config["latent_dim_mlp"])
+        )
         
         self.quantum_net = qml.QNode(self.strongly_entangling_layers, self.quantum_device, interface="torch", diff_method="best")
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

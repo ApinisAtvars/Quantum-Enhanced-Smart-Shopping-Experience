@@ -30,7 +30,7 @@ class GaussianDressedQuantumNetwork(nn.Module):
         )
         
         self.quantum_net = qml.QNode(self.quantum_nn, self.quantum_device, interface="torch", diff_method="best")
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda:0" if config['use_cuda'] else "cpu")
 
     def forward(self, input_features):
         q_in = self.pre_net(input_features)

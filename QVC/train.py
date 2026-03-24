@@ -31,7 +31,7 @@ neumf_config = {'alias': '23_03_gaussian_dqn',
                 'layers': [16, 64, 32, 16, 8],      # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
                 'l2_regularization': 0,     # original 0
                 'weight_init_gaussian': True,
-                'use_cuda': True,
+                'use_cuda': False,
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,

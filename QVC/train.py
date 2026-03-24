@@ -16,8 +16,8 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '20_03_adam_subset_dense_nq4',
-                'num_epoch': 10,                    # original 100, less now because an epoch takes 40 min for implicit NeuMF
+neumf_config = {'alias': '23_03_gaussian_dqn',
+                'num_epoch': 10,                    # original 100
                 'batch_size': 16,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
                 'adam_lr': 1e-3,                    # original 0.001
@@ -38,10 +38,10 @@ neumf_config = {'alias': '20_03_adam_subset_dense_nq4',
                 'pretrain_neumf_dir': r"checkpoints\1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
-                'n_qubits': 4,                      # Ideally, config['layers'][-1] + config['latent_dim_mf'] but this consumes too much VRAM
+                'n_qubits': 1,                      
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
-                'description': "Changed optimizer back to Adam, added 16 neuron dense layer after DQN. Used subset of 1000 users. Increased qubits to 4"
+                'description': "Changed DQN to Gaussian DQN, kept Dense layer after DQN, used subset of 1000 users, set n_qubits to 1 for faster training and debugging"
                 }
 
 # Load Data

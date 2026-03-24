@@ -1,7 +1,7 @@
 import torch
 from Engine import Engine
 from utils import use_cuda, resume_checkpoint
-from Dressed_Quantum_Net import DressedQuantumNetwork
+from Gaussian_Dressed_Quantum_Net import GaussianDressedQuantumNetwork
 
 from torch import nn
 import pennylane as qml
@@ -32,7 +32,7 @@ class QVCNeuMF(torch.nn.Module):
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
 
-        self.quantum_network = DressedQuantumNetwork(config) # Assigned to affine_output after weights are loaded
+        self.quantum_network = GaussianDressedQuantumNetwork(config) # Assigned to affine_output after weights are loaded
         # Initialize model parameters with a Gaussian distribution (with a mean of 0 and standard deviation of 0.01)
         if config['weight_init_gaussian'] and not config['pretrain']:
             for sm in self.modules():

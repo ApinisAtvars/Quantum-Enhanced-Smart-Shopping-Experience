@@ -16,7 +16,7 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '23_03_gaussian_dqn_v2',
+neumf_config = {'alias': '25_03_full_model_without_qvc',
                 'num_epoch': 10,                    # original 100
                 'batch_size': 16,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -31,12 +31,12 @@ neumf_config = {'alias': '23_03_gaussian_dqn_v2',
                 'layers': [16, 64, 32, 16, 8],      # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
                 'l2_regularization': 0,     # original 0
                 'weight_init_gaussian': True,
-                'use_cuda': False,
+                'use_cuda': True,
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,
                 'pretrain_neumf_dir': r"checkpoints/1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",     # does nothing if qvrn_dir provided
-                'pretrain_qvrn_dir': r"checkpoints/23_03_gaussian_dqn_Epoch3_HR0.7600_NDCG0.4991.model",    # if provided, will load weights for whole system including quantum circuit dressing
+                'pretrain_qvrn_dir': r"worthwhile_checkpoints\23_03_gaussian_dqn_v2_Epoch5_HR0.7740_NDCG0.5104.model",    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
                 'n_qubits': 1,                      
@@ -73,7 +73,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data("data/ncf_preprocessed/ratings_subset.csv", is_ml1m=False)
+dataset = preprocess_data("data/ml-1m/ratings.dat", is_ml1m=True)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

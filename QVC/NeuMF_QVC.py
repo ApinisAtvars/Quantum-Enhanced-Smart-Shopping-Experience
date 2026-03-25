@@ -91,7 +91,11 @@ class QVCNeuMFEngine(Engine):
             param.requires_grad = True
         
         if config['pretrain'] and config['pretrain_qvrn_dir'] is not None: # Load weights here if the pretrained model is a QVCNeuMF
-            resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'])
+            resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'], device_id=0)
+        
+        # remove the quantum network from the model after loading the pretrained weights
+        # to see if the performance gain is only because of the added linear layer
+        self.model.final_mlp_ff_layer = self.model.final_mlp_ff_layer[0]
 
         # initialize engine (optimizer, etc.) after setting up the model's frozen/trainable parameters
         super(QVCNeuMFEngine, self).__init__(config)

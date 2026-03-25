@@ -73,7 +73,7 @@ class QVCNeuMFEngine(Engine):
         if config['use_cuda'] is True:
             use_cuda(True, config['device_id'])
             self.model.cuda()
-        if config['pretrain']:
+        if config['pretrain'] and config['pretrain_qvrn_dir'] is None: # Load weights here if the pretrained model is a vanilla NeuMF
             resume_checkpoint(self.model, model_dir=config['pretrain_neumf_dir'])
             
         # Freeze only the embedding layers.
@@ -89,7 +89,10 @@ class QVCNeuMFEngine(Engine):
         # ensure quantum network parameters are trainable
         for param in self.model.final_mlp_ff_layer.parameters():
             param.requires_grad = True
-            
+        
+        if config['pretrain'] and config['pretrain_qvrn_dir'] is not None: # Load weights here if the pretrained model is a QVCNeuMF
+            resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'])
+
         # initialize engine (optimizer, etc.) after setting up the model's frozen/trainable parameters
         super(QVCNeuMFEngine, self).__init__(config)
         print(self.model)

@@ -16,7 +16,7 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '23_03_gaussian_dqn',
+neumf_config = {'alias': '23_03_gaussian_dqn_v2',
                 'num_epoch': 10,                    # original 100
                 'batch_size': 16,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -35,13 +35,14 @@ neumf_config = {'alias': '23_03_gaussian_dqn',
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,
-                'pretrain_neumf_dir': r"checkpoints\1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",
+                'pretrain_neumf_dir': r"checkpoints/1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",     # does nothing if qvrn_dir provided
+                'pretrain_qvrn_dir': r"checkpoints/23_03_gaussian_dqn_Epoch3_HR0.7600_NDCG0.4991.model",    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
                 'n_qubits': 1,                      
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
-                'description': "Changed DQN to Gaussian DQN, kept Dense layer after DQN, used subset of 1000 users, set n_qubits to 1 for faster training and debugging"
+                'description': "Ran from pretrained QVCNeuMF. Moved to CPU. Used full ml1m dataset."
                 }
 
 # Load Data
@@ -72,7 +73,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data("data/ncf_preprocessed/ratings_subset.csv", False)
+dataset = preprocess_data("data/ncf_preprocessed/ratings_subset.csv", is_ml1m=False)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

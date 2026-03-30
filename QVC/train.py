@@ -42,6 +42,7 @@ neumf_config = {'alias': '30_03_test_model_logging',
                 'n_qubits': 1,                      
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
+                'data_path': r"data\ml-1m\ratings.dat",
                 'description': "This should be deleted. It's just a test to see whether the model gets correctly logged in Tensorboard."
                 }
 
@@ -73,7 +74,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data(r"data\ml-1m\ratings.dat", is_ml1m=True)
+dataset = preprocess_data(neumf_config['data_path'], is_ml1m=True)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

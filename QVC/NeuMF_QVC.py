@@ -40,6 +40,11 @@ class QVCNeuMF(torch.nn.Module):
                     print(sm)
                     torch.nn.init.normal_(sm.weight.data, 0.0, 0.01)
 
+    def get_quantum_circuit_text(self):
+        if hasattr(self.quantum_network, 'export_circuit_text'):
+            return self.quantum_network.export_circuit_text()
+        return None
+
     
     #region Forward
     def forward(self, user_indices, item_indices):
@@ -95,8 +100,13 @@ class QVCNeuMFEngine(Engine):
         
         # remove the quantum network from the model after loading the pretrained weights
         # to see if the performance gain is only because of the added linear layer
-        self.model.final_mlp_ff_layer = self.model.final_mlp_ff_layer[0]
+        # self.model.final_mlp_ff_layer = nn.Sequential(self.model.final_mlp_ff_layer[0],
+        #                                               nn.Linear(config['layers'][-1], config['n_qubits']), # Pre-net for Gaussian dressed quantum circuit
+        #                                               nn.Linear(1, 16), # Post-net
+        #                                               nn.ReLU(),        # Post-net
+        #                                               nn.Linear(16, config["latent_dim_mlp"])) # Post-net
 
+        # self.model.to("cuda") # Need to manually set because I just included new layers
         # initialize engine (optimizer, etc.) after setting up the model's frozen/trainable parameters
         super(QVCNeuMFEngine, self).__init__(config)
         print(self.model)

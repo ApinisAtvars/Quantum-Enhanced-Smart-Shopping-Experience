@@ -32,12 +32,18 @@ class GaussianDressedQuantumNetwork(nn.Module):
         self.quantum_net = qml.QNode(self.quantum_nn, self.quantum_device, interface="torch", diff_method="best")
         self.device = torch.device("cuda:0" if config['use_cuda'] else "cpu")
 
+    def export_circuit_text(self):
+        """Return a static text diagram of the current quantum circuit."""
+        sample_inputs = torch.zeros(self.n_modes, dtype=self.q_params.dtype, device=self.q_params.device)
+        sample_weights = self.q_params.detach()
+        return qml.draw(self.quantum_net)(sample_inputs, sample_weights)
+
     def forward(self, input_features):
         q_in = self.pre_net(input_features)
 
-        # Handle torchview's RecorderTensor which is incompatible with PennyLane's multi-dispatch
-        if type(q_in).__name__ == "RecorderTensor":
-            # Skip the quantum simulator during graph tracing, maintain the graph trace dimension
+        # Skip PennyLane execution during graph tracing to avoid trace-only failures
+        # with tensor iteration and tensor->NumPy conversions inside the QNode path.
+        if torch.jit.is_tracing() or type(q_in).__name__ == "RecorderTensor":
             dummy_q_out = q_in[:, :1] * 0.0 
             return self.post_net(dummy_q_out)
 

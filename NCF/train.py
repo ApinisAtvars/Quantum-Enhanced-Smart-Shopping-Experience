@@ -9,8 +9,8 @@ import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
-neumf_config = {'alias': '1_implicit_ml1m',
-                'num_epoch': 100, # original 100, less now because an epoch takes 40 min for implicit NeuMF
+neumf_config = {'alias': '28_03_b256_classical_neumf_baseline',
+                'num_epoch': 10, # original 100, less now because an epoch takes 40 min for implicit NeuMF
                 'batch_size': 256, # original 256
                 'optimizer': 'adam', # original 'adam'
                 'adam_lr': 1e-3, # original 0.001
@@ -64,7 +64,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data("data/ml-1m/ratings.dat", True)
+dataset = preprocess_data(r"data\ncf_preprocessed\ratings_subset.csv", False)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 
@@ -93,27 +93,3 @@ for epoch in range(config['num_epoch']):
     else:
         hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
         engine.save(config['alias'], epoch, hit_ratio=hit_ratio, ndcg=ndcg)
-
-
-print("Training complete! Initializing auto-sync to Git...")
-
-# Path to the powershell script (assumes it's in the same directory as this python script)
-ps_script_path = os.path.join(os.getcwd(), "git-sync.ps1")
-
-try:
-    # Run the PowerShell script
-    # -ExecutionPolicy Bypass ensures the script runs even if your system restricted scripts
-    result = subprocess.run(
-        ["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", ps_script_path, "-CommitMessage", "AUTOMATED: Done training implicit NeuMF"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    
-    # Print the output from the PowerShell script so you can see the Git results
-    print(result.stdout)
-
-except subprocess.CalledProcessError as e:
-    print(f"Error occurred while syncing to Git: {e.stderr}")
-except Exception as e:
-    print(f"An unexpected error occurred: {e}")

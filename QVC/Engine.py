@@ -40,6 +40,35 @@ class Engine(object):
         self._writer.add_scalar('data_split/test_percent', test_pct, 0)
         self._writer.add_scalar('data_split/train_size', train_size, 0)
         self._writer.add_scalar('data_split/test_size', test_size, 0)
+    
+    def log_model_architecture(self, data_loader):
+        """Log model architecture to Tensorboard."""
+        try:
+            sample_batch = next(iter(data_loader))
+            users, items, ratings = sample_batch[0], sample_batch[1], sample_batch[2]
+            if self.config['use_cuda'] is True:
+                users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()
+            self._writer.add_graph(self.model, (users, items))
+        except Exception as e:
+            print(f"Failed to log model architecture: {e}")
+
+        self.log_quantum_circuit()
+
+    def log_quantum_circuit(self):
+        """Log a text diagram of the quantum circuit to TensorBoard."""
+        try:
+            circuit_text = None
+            if hasattr(self.model, 'get_quantum_circuit_text'):
+                circuit_text = self.model.get_quantum_circuit_text()
+            elif hasattr(self.model, 'quantum_network') and hasattr(self.model.quantum_network, 'export_circuit_text'):
+                circuit_text = self.model.quantum_network.export_circuit_text()
+
+            if circuit_text:
+                self._writer.add_text('model/quantum_circuit', f"<pre>{circuit_text}</pre>", 0)
+            else:
+                print("Quantum circuit logging skipped: no circuit exporter found on model.")
+        except Exception as e:
+            print(f"Failed to log quantum circuit: {e}")
 
     def train_single_batch(self, users, items, ratings):
         assert hasattr(self, 'model'), 'Please specify the exact model !'

@@ -16,9 +16,9 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '25_03_full_model_without_qvc',
+neumf_config = {'alias': '30_03_test_model_logging',
                 'num_epoch': 10,                    # original 100
-                'batch_size': 16,                    # original 256
+                'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
                 'adam_lr': 1e-3,                    # original 0.001
                 # 'sgd_lr': 0.003,                    # new for sgd
@@ -31,18 +31,18 @@ neumf_config = {'alias': '25_03_full_model_without_qvc',
                 'layers': [16, 64, 32, 16, 8],      # layers[0] is the concat of latent user vector & latent item vector, this is what they used in the og paper too
                 'l2_regularization': 0,     # original 0
                 'weight_init_gaussian': True,
-                'use_cuda': True,
+                'use_cuda': False,
                 'use_bachify_eval': True,
                 'device_id': 0,
                 'pretrain': False,
-                'pretrain_neumf_dir': r"checkpoints/1_implicit_ml1m_Epoch99_HR0.6776_NDCG0.4098.model",     # does nothing if qvrn_dir provided
-                'pretrain_qvrn_dir': r"worthwhile_checkpoints\23_03_gaussian_dqn_v2_Epoch5_HR0.7740_NDCG0.5104.model",    # if provided, will load weights for whole system including quantum circuit dressing
+                'pretrain_neumf_dir': None,     # does nothing if qvrn_dir provided
+                'pretrain_qvrn_dir': None,    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
                 'n_qubits': 1,                      
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
-                'description': "Ran from pretrained QVCNeuMF. Moved to CPU. Used full ml1m dataset."
+                'description': "This should be deleted. It's just a test to see whether the model gets correctly logged in Tensorboard."
                 }
 
 # Load Data
@@ -73,7 +73,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data("data/ml-1m/ratings.dat", is_ml1m=True)
+dataset = preprocess_data(r"data\ml-1m\ratings.dat", is_ml1m=True)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 
@@ -91,6 +91,8 @@ engine = QVCNeuMFEngine(config)
 
 engine.log_data_split(train_size=train_size, test_size=test_size)
 
+engine.log_model_architecture(sample_generator.instance_a_train_loader(config['num_negative'], config['batch_size']))
+
 for epoch in range(config['num_epoch']):
     print('Epoch {} starts !'.format(epoch))
     print('-' * 80)
@@ -102,27 +104,3 @@ for epoch in range(config['num_epoch']):
     else:
         hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
         engine.save(config['alias'], epoch, hit_ratio=hit_ratio, ndcg=ndcg)
-
-
-print("Training complete! Initializing auto-sync to Git...")
-
-# Path to the powershell script (assumes it's in the same directory as this python script)
-ps_script_path = os.path.join(os.getcwd(), "git-sync.ps1")
-
-try:
-    # Run the PowerShell script
-    # -ExecutionPolicy Bypass ensures the script runs even if your system restricted scripts
-    result = subprocess.run(
-        ["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", ps_script_path, "-CommitMessage", "AUTOMATED: Done training implicit NeuMF"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    
-    # Print the output from the PowerShell script so you can see the Git results
-    print(result.stdout)
-
-except subprocess.CalledProcessError as e:
-    print(f"Error occurred while syncing to Git: {e.stderr}")
-except Exception as e:
-    print(f"An unexpected error occurred: {e}")

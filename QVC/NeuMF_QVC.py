@@ -2,6 +2,7 @@ import torch
 from Engine import Engine
 from utils import use_cuda, resume_checkpoint
 from Gaussian_Dressed_Quantum_Net import GaussianDressedQuantumNetwork
+from Dressed_Quantum_Net import DressedQuantumNetwork
 
 from torch import nn
 import pennylane as qml
@@ -32,7 +33,7 @@ class QVCNeuMF(torch.nn.Module):
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
 
-        self.quantum_network = GaussianDressedQuantumNetwork(config) # Assigned to affine_output after weights are loaded
+        self.quantum_network = DressedQuantumNetwork(config) # Assigned to affine_output after weights are loaded
         # Initialize model parameters with a Gaussian distribution (with a mean of 0 and standard deviation of 0.01)
         if config['weight_init_gaussian'] and not config['pretrain']:
             for sm in self.modules():
@@ -87,12 +88,6 @@ class QVCNeuMFEngine(Engine):
                 strict=False,
                 allowed_missing_prefixes=['quantum_network.']
             )
-            
-        # Freeze only the embedding layers.
-        # TODO: This code doesn't work
-        # for param in self.model.parameters():
-        #     if param in [self.model.embedding_user_mlp, self.model.embedding_item_mlp, self.model.embedding_user_mf, self.model.embedding_item_mf]:
-        #         param.requires_grad = False
 
 
         # Insert the quantum circuit before the final affine output layer
@@ -105,6 +100,18 @@ class QVCNeuMFEngine(Engine):
         
         if config['pretrain'] and config['pretrain_qvrn_dir'] is not None: # Load weights here if the pretrained model is a QVCNeuMF
             resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'], use_cuda=config['use_cuda'], device_id=config['device_id'])
+
+        # Freeze embedding layers only when fine-tuning from a pretrained checkpoint.
+        if config['pretrain']:
+            embedding_layers = [
+                self.model.embedding_user_mlp,
+                self.model.embedding_item_mlp,
+                self.model.embedding_user_mf,
+                self.model.embedding_item_mf,
+            ]
+            for emb in embedding_layers:
+                for param in emb.parameters():
+                    param.requires_grad = False
         
         # remove the quantum network from the model after loading the pretrained weights
         # to see if the performance gain is only because of the added linear layer

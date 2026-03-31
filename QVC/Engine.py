@@ -43,14 +43,24 @@ class Engine(object):
     
     def log_model_architecture(self, data_loader):
         """Log model architecture to Tensorboard."""
+        was_training = self.model.training
         try:
             sample_batch = next(iter(data_loader))
             users, items, ratings = sample_batch[0], sample_batch[1], sample_batch[2]
             if self.config['use_cuda'] is True:
                 users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()
-            self._writer.add_graph(self.model, (users, items))
+
+            # Use a tiny representative batch to keep graph export lightweight.
+            users = users[:1]
+            items = items[:1]
+
+            self.model.eval()
+            with torch.no_grad():
+                self._writer.add_graph(self.model, (users, items))
         except Exception as e:
-            print(f"Failed to log model architecture: {e}")
+            print(f"Failed to log model architecture (continuing without graph): {e}")
+        finally:
+            self.model.train(was_training)
 
         self.log_quantum_circuit()
 

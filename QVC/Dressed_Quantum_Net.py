@@ -22,17 +22,27 @@ class DressedQuantumNetwork(nn.Module):
         self.quantum_net = qml.QNode(self.strongly_entangling_layers, self.quantum_device, interface="torch", diff_method="best")
         self.device = torch.device(f"cuda:{config['device_id']}" if config['use_cuda'] else "cpu")
 
+    def export_circuit_text(self):
+        """Return a static text diagram of the current quantum circuit."""
+        sample_inputs = torch.zeros(self.config["n_qubits"], dtype=self.q_params.dtype, device=self.q_params.device)
+        sample_weights = self.q_params.detach()
+        return qml.draw(self.quantum_net)(sample_inputs, sample_weights)
+
 
     def forward(self, input_features):
         q_in = self.pre_net(input_features)
 
-        q_out = torch.Tensor(0, self.config["n_qubits"])
-        q_out = q_out.to(self.device)
-        
+        # Skip PennyLane execution during tracing because QNode internals rely on
+        # Python-side shape checks and tensor conversions that are not trace-safe.
+        if torch.jit.is_tracing() or type(q_in).__name__ == "RecorderTensor":
+            return self.post_net(q_in * 0.0)
+
+        q_out = []
         for elem in q_in:
-            q_out_elem = torch.hstack(self.quantum_net(elem, self.q_params)).float().unsqueeze(0)
-            q_out = torch.cat((q_out, q_out_elem))
-        
+            q_out_elem = torch.hstack(self.quantum_net(elem, self.q_params)).to(dtype=q_in.dtype)
+            q_out.append(q_out_elem.unsqueeze(0))
+
+        q_out = torch.cat(q_out, dim=0).to(q_in.device)
         return self.post_net(q_out)
 
     
@@ -106,5 +116,4 @@ class DressedQuantumNetwork(nn.Module):
         return tuple(exp_vals)
     
 if __name__=="__main__":
-    
-    DressedQuantumNetwork(config)
+    pass

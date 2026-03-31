@@ -13,10 +13,35 @@ def save_checkpoint(model, model_dir):
     torch.save(model.state_dict(), model_dir)
 
 
-def resume_checkpoint(model, model_dir, device_id):
-    state_dict = torch.load(model_dir,
-                            map_location=lambda storage, loc: storage.cuda(device=device_id))  # ensure all storage are on gpu
-    model.load_state_dict(state_dict)
+def resume_checkpoint(model, model_dir, use_cuda, device_id=None, strict=True, allowed_missing_prefixes=None):
+    if use_cuda:
+        map_location = None if device_id is None else f'cuda:{device_id}'
+    else:
+        map_location = 'cpu'
+
+    state_dict = torch.load(model_dir, map_location=map_location)
+    if isinstance(state_dict, dict) and 'state_dict' in state_dict:
+        state_dict = state_dict['state_dict']
+
+    if strict:
+        model.load_state_dict(state_dict)
+        return
+
+    missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+    allowed_missing_prefixes = allowed_missing_prefixes or []
+    disallowed_missing = [
+        key for key in missing_keys
+        if not any(key.startswith(prefix) for prefix in allowed_missing_prefixes)
+    ]
+
+    if disallowed_missing or unexpected_keys:
+        raise RuntimeError(
+            'Checkpoint loading failed with non-allowed key mismatches. '
+            f'Missing keys: {disallowed_missing}. Unexpected keys: {unexpected_keys}'
+        )
+
+    if missing_keys:
+        print(f'Loaded checkpoint with allowed missing keys: {missing_keys}')
 
 
 # Hyper params

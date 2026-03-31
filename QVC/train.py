@@ -16,7 +16,7 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '30_03_test_model_logging',
+neumf_config = {'alias': '31_03_DELETE_test_checkpoint_loading',
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -34,15 +34,15 @@ neumf_config = {'alias': '30_03_test_model_logging',
                 'use_cuda': False,
                 'use_bachify_eval': True,
                 'device_id': 0,
-                'pretrain': False,
-                'pretrain_neumf_dir': None,     # does nothing if qvrn_dir provided
+                'pretrain': True,
+                'pretrain_neumf_dir': r"worthwhile_checkpoints\31_03_subset_vanilla_neumf_Epoch9_HR0.7840_NDCG0.5305.model",     # does nothing if qvrn_dir provided
                 'pretrain_qvrn_dir': None,    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
                 'n_qubits': 1,                      
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
-                'data_path': r"data\ml-1m\ratings.dat",
+                'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
                 'description': "This should be deleted. It's just a test to see whether the model gets correctly logged in Tensorboard."
                 }
 
@@ -74,7 +74,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data(neumf_config['data_path'], is_ml1m=True)
+dataset = preprocess_data(neumf_config['data_path'], is_ml1m=False)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

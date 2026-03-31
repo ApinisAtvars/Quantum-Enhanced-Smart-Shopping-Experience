@@ -79,12 +79,20 @@ class QVCNeuMFEngine(Engine):
             use_cuda(True, config['device_id'])
             self.model.cuda()
         if config['pretrain'] and config['pretrain_qvrn_dir'] is None: # Load weights here if the pretrained model is a vanilla NeuMF
-            resume_checkpoint(self.model, model_dir=config['pretrain_neumf_dir'])
+            resume_checkpoint(
+                self.model,
+                model_dir=config['pretrain_neumf_dir'],
+                use_cuda=config['use_cuda'],
+                device_id=config['device_id'],
+                strict=False,
+                allowed_missing_prefixes=['quantum_network.']
+            )
             
         # Freeze only the embedding layers.
-        for param in self.model.parameters():
-            if param in [self.model.embedding_user_mlp, self.model.embedding_item_mlp, self.model.embedding_user_mf, self.model.embedding_item_mf]:
-                param.requires_grad = False
+        # TODO: This code doesn't work
+        # for param in self.model.parameters():
+        #     if param in [self.model.embedding_user_mlp, self.model.embedding_item_mlp, self.model.embedding_user_mf, self.model.embedding_item_mf]:
+        #         param.requires_grad = False
 
 
         # Insert the quantum circuit before the final affine output layer
@@ -96,7 +104,7 @@ class QVCNeuMFEngine(Engine):
             param.requires_grad = True
         
         if config['pretrain'] and config['pretrain_qvrn_dir'] is not None: # Load weights here if the pretrained model is a QVCNeuMF
-            resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'], device_id=0)
+            resume_checkpoint(self.model, model_dir=config['pretrain_qvrn_dir'], use_cuda=config['use_cuda'], device_id=config['device_id'])
         
         # remove the quantum network from the model after loading the pretrained weights
         # to see if the performance gain is only because of the added linear layer

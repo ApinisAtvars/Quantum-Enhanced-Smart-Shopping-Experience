@@ -25,6 +25,8 @@ class NeuMF(torch.nn.Module):
         for idx, (in_size, out_size) in enumerate(zip(config['layers'][:-1], config['layers'][1:])):
             self.fc_layers.append(torch.nn.Linear(in_size, out_size))
 
+        self.final_mlp_ff_layer = torch.nn.Linear(in_features=config['layers'][-2], out_features=config['latent_dim_mlp'])
+
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
 
@@ -44,9 +46,12 @@ class NeuMF(torch.nn.Module):
         mlp_vector = torch.cat([user_embedding_mlp, item_embedding_mlp], dim=-1)  # the concat latent vector
         mf_vector =torch.mul(user_embedding_mf, item_embedding_mf)
 
-        for idx, _ in enumerate(range(len(self.fc_layers))):
+        for idx, _ in enumerate(range(len(self.fc_layers)-1)):
             mlp_vector = self.fc_layers[idx](mlp_vector)
             mlp_vector = torch.nn.ReLU()(mlp_vector)
+
+        # Same as in QVC/NeuMF_QVC.py to load pretrained NeuMF weights
+        mlp_vector = self.final_mlp_ff_layer(mlp_vector)
 
         vector = torch.cat([mlp_vector, mf_vector], dim=-1)
         logits = self.affine_output(vector)

@@ -9,7 +9,7 @@ import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
-neumf_config = {'alias': '28_03_b256_classical_neumf_baseline',
+neumf_config = {'alias': '31_03_subset_vanilla_neumf',
                 'num_epoch': 10, # original 100, less now because an epoch takes 40 min for implicit NeuMF
                 'batch_size': 256, # original 256
                 'optimizer': 'adam', # original 'adam'
@@ -29,14 +29,11 @@ neumf_config = {'alias': '28_03_b256_classical_neumf_baseline',
                 'pretrain_mf': 'checkpoints/{}'.format('gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model'),
                 'pretrain_mlp': 'checkpoints/{}'.format('mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model'),
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
+                'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
                 'are_ratings_explicit': RATING_TYPE == 'explicit'
                 }
 
 # Load Data
-# ml1m_dir = 'data/ml-1m/ratings.dat'
-# ml32m_dir = 'data/ncf_preprocessed/ratings.csv'
-# ml1m_rating = pd.read_csv(ml1m_dir, sep='::', header=None, names=['uid', 'mid', 'rating', 'timestamp'], engine='python')
-
 def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     """
     Preprocess the data, and set the number of users and items in the NeuMF config based on dataset size.
@@ -64,7 +61,7 @@ def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:
     return dataset
 
 
-dataset = preprocess_data(r"data\ncf_preprocessed\ratings_subset.csv", False)
+dataset = preprocess_data(neumf_config['data_path'], False)
 
 print(f"Number of users: {neumf_config['num_users']}, Number of items: {neumf_config['num_items']}")
 

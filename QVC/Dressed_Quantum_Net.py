@@ -20,7 +20,7 @@ class DressedQuantumNetwork(nn.Module):
         )
         
         self.quantum_net = qml.QNode(self.strongly_entangling_layers, self.quantum_device, interface="torch", diff_method="best")
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(f"cuda:{config['device_id']}" if config['use_cuda'] else "cpu")
 
 
     def forward(self, input_features):

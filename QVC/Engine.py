@@ -88,6 +88,9 @@ class Engine(object):
         ratings_pred = self.model(users, items)
         loss = self.crit(ratings_pred.view(-1), ratings)
         loss.backward()
+        clip_norm = self.config.get('clip_grad_norm_')
+        if clip_norm is not None:
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=clip_norm)
         self.opt.step()
         loss = loss.item()
         return loss

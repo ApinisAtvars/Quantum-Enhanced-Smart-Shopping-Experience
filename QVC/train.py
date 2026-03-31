@@ -16,11 +16,12 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '31_03_AngleEmbedding_subset_reduced_lr',
+neumf_config = {'alias': '31_03_AngleEmbedding_gradient_clipping',
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
-                'adam_lr': 3e-4,                    # original 0.001
+                'adam_lr': 1e-3,                    # original 0.001
+                'clip_grad_norm_': 1.0,             # set to None for no gradient clipping, original None
                 # 'sgd_lr': 0.003,                    # new for sgd
                 # 'sgd_momentum': 0,                  # disable momentum for finetuning
                 'num_users': None,                  # to be set after loading data
@@ -43,7 +44,7 @@ neumf_config = {'alias': '31_03_AngleEmbedding_subset_reduced_lr',
                 'q_depth': 1,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
-                'description': "Running reduced learning rate, initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Trained for 10 epochs on subset to see whether reducing learning rate improves training stability."
+                'description': "Initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Trained for 10 epochs on subset to see whether gradient clipping improves training stability."
                 }
 
 # Load Data

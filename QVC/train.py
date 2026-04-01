@@ -17,13 +17,13 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '31_03_AngleEmbedding_gradient_clipping',
+neumf_config = {'alias': '01_04_AngleEmbedding_qd2_nq4',
                 'seed': 42,
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
                 'adam_lr': 1e-3,                    # original 0.001
-                'clip_grad_norm_': 1.0,             # set to None for no gradient clipping, original None
+                'clip_grad_norm_': None,            # set to None for no gradient clipping, original None
                 # 'sgd_lr': 0.003,                    # new for sgd
                 # 'sgd_momentum': 0,                  # disable momentum for finetuning
                 'num_users': None,                  # to be set after loading data
@@ -42,11 +42,11 @@ neumf_config = {'alias': '31_03_AngleEmbedding_gradient_clipping',
                 'pretrain_qvrn_dir': None,    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
-                'n_qubits': 3,
-                'q_depth': 1,                       # Number of variational layers
+                'n_qubits': 4,
+                'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
-                'description': "Initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Trained for 10 epochs on subset to see whether gradient clipping improves training stability."
+                'description': "Initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Qubit depth of 2, and 4 qubits. Trained for 10 epochs to see whether qubit depth increases accuracy."
                 }
 
 set_global_seed(neumf_config['seed'], use_cuda=neumf_config['use_cuda'])

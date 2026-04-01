@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from NeuMF_QVC import QVCNeuMFEngine
 from data import SampleGenerator
+from utils import set_global_seed
 
 # Temp for automatically pushing when done training
 import subprocess
@@ -17,6 +18,7 @@ qd - qubit depth
 
 '''
 neumf_config = {'alias': '31_03_AngleEmbedding_gradient_clipping',
+                'seed': 42,
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -46,6 +48,8 @@ neumf_config = {'alias': '31_03_AngleEmbedding_gradient_clipping',
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
                 'description': "Initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Trained for 10 epochs on subset to see whether gradient clipping improves training stability."
                 }
+
+set_global_seed(neumf_config['seed'], use_cuda=neumf_config['use_cuda'])
 
 # Load Data
 def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:

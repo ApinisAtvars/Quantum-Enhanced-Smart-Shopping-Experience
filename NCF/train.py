@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from NeuMF import NeuMFEngine
 from data import SampleGenerator
+from utils import set_global_seed
 
 # Temp for automatically pushing when done training
 import subprocess
@@ -10,6 +11,7 @@ import os
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
 neumf_config = {'alias': '31_03_subset_vanilla_neumf',
+                'seed': 42,
                 'num_epoch': 10, # original 100, less now because an epoch takes 40 min for implicit NeuMF
                 'batch_size': 256, # original 256
                 'optimizer': 'adam', # original 'adam'
@@ -32,6 +34,8 @@ neumf_config = {'alias': '31_03_subset_vanilla_neumf',
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
                 'are_ratings_explicit': RATING_TYPE == 'explicit'
                 }
+
+set_global_seed(neumf_config['seed'], use_cuda=neumf_config['use_cuda'])
 
 # Load Data
 def preprocess_data(dir: str, is_ml1m: bool) -> pd.DataFrame:

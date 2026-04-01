@@ -1,0 +1,6 @@
+evidence,value,unit
+mean_hr10_uplift_high_sparse,0.004444444444444434,absolute
+mean_ndcg10_uplift_high_sparse,0.0024536157083334333,absolute
+hr10_hybrid_at_80_drop,0.0,absolute
+hr10_classical_at_80_drop,0.0,absolute
+hr10_uplift_pct_at_80_drop,0.0,percent

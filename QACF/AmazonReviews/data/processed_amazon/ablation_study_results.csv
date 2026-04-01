@@ -1,0 +1,13 @@
+ablation,sparsity_drop,hr@10,ndcg@10,n_users
+Full Hybrid,0.2,0.0,0.0,30
+Full Hybrid,0.6,0.0,0.0,30
+Full Hybrid,0.95,0.0,0.0,30
+No MMR,0.2,0.0,0.0,30
+No MMR,0.6,0.0,0.0,30
+No MMR,0.95,0.0,0.0,30
+No Novelty Boost,0.2,0.0,0.0,30
+No Novelty Boost,0.6,0.0,0.0,30
+No Novelty Boost,0.95,0.0,0.0,30
+No Shrinkage,0.2,0.0,0.0,30
+No Shrinkage,0.6,0.0,0.0,30
+No Shrinkage,0.95,0.0,0.0,30

@@ -1,0 +1,2 @@
+n_reviews,mean_words,std_words,min_words,max_words,sample_p50_words,sample_p90_words,sample_p99_words
+29475453,74.54353603997197,128.50310946460831,0,6192,32.0,185.0,609.0

@@ -1,0 +1,59 @@
+{
+  "configuration": {
+    "candidate_pool": 3500,
+    "max_neighbor_scan": 600,
+    "base_quantum_weight": 0.45,
+    "shrinkage_factor": 15,
+    "diversity_lambda": 0.05,
+    "novelty_boost": 0.03,
+    "eval_users": 300,
+    "topn": 10,
+    "seed": 42
+  },
+  "quantum_routing": {
+    "quantum_labels_source": "c:\\Users\\acolumban\\Desktop\\Quantum-Enhanced-Smart-Shopping-Experience\\QACF\\AmazonReviews\\data\\processed_amazon\\quantum_user_labels_best.npy -> refined_latent_kmeans_k4",
+    "raw_quantum_groups": 22,
+    "raw_silhouette": -0.6984766569929708,
+    "refined_routing_groups": 4,
+    "refined_silhouette": 0.9255518443163947,
+    "d_wave_qubo_energy": 65.76879519843169,
+    "d_wave_qubo_clusters": 4
+  },
+  "results_at_0_drop": {
+    "hybrid_hr10": 0.006666666666666667,
+    "classical_hr10": 0.0,
+    "top1_accuracy_hybrid": 0.0,
+    "top1_accuracy_classical": 0.0
+  },
+  "long_tail_metrics": {
+    "coverage": 3.1157251538723124e-06,
+    "gini": 0.9999977719597792,
+    "diversity": 0.9059886531035105,
+    "category_coverage_at10": 0.09999999999999999
+  },
+  "best_improvements": {
+    "best_hr10_uplift_pct": -100.0,
+    "best_hr10_uplift_sparsity": 0.6,
+    "best_ndcg10_uplift_pct": -100.00000000000001,
+    "best_ndcg10_uplift_sparsity": 0.6
+  },
+  "statistics": {
+    "p_value_columns_present": true
+  },
+  "ablation_study": {
+    "rows": 4,
+    "results_file": "ablation_amazon.csv",
+    "comparison_plot": "ablation_amazon_bar.png"
+  },
+  "paired_eval_files": {
+    "drop0_eval_hybrid": "drop0_eval_hybrid.csv",
+    "drop0_eval_classical": "drop0_eval_classical.csv"
+  },
+  "circuit_visualizations": {
+    "amplitude_encoding": "encoding_circuit_amazon.png",
+    "iqp_ansatz": "iqp_ansatz_amazon.png",
+    "swap_test": "swap_test_amazon.png",
+    "dpi": 300,
+    "source": "Notebook 03/04 quantum visualization cells"
+  }
+}

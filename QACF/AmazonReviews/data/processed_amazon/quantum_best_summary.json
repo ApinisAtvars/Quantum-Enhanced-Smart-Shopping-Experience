@@ -1,0 +1,8 @@
+{
+  "best_method": "HDBSCAN_tuned",
+  "best_silhouette": 0.12702992886989117,
+  "target_achieved": false,
+  "amazon_vs_ubcf_delta": 0.024742017925151877,
+  "kernel_source": "trainable_fusion",
+  "timestamp": "2026-03-26 18:06:55.147570"
+}

@@ -1,0 +1,10 @@
+{
+  "fusion_weights": {
+    "kernel_ent": 0.6,
+    "kernel_vqe_base": 0.4
+  },
+  "best_k": 10,
+  "method": "kmeans_fused",
+  "silhouette": 0.10383883061775279,
+  "improvement_over_best": -0.009921268190709015
+}

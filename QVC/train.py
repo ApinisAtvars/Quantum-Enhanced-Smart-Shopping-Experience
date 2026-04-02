@@ -17,7 +17,7 @@ qd - qubit depth
 
 
 '''
-neumf_config = {'alias': '01_04_AngleEmbedding_qd2_nq4',
+neumf_config = {'alias': '02_04_no_pretrain_AngleEmbedding_qd2_nq4',
                 'seed': 42,
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
@@ -37,8 +37,8 @@ neumf_config = {'alias': '01_04_AngleEmbedding_qd2_nq4',
                 'use_cuda': False,
                 'use_bachify_eval': True,
                 'device_id': 0,
-                'pretrain': True,
-                'pretrain_neumf_dir': r"worthwhile_checkpoints\31_03_subset_vanilla_neumf_Epoch9_HR0.7840_NDCG0.5305.model",     # does nothing if qvrn_dir provided
+                'pretrain': False,
+                'pretrain_neumf_dir': None,     # does nothing if qvrn_dir provided
                 'pretrain_qvrn_dir': None,    # if provided, will load weights for whole system including quantum circuit dressing
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'are_ratings_explicit': RATING_TYPE == 'explicit',
@@ -46,7 +46,7 @@ neumf_config = {'alias': '01_04_AngleEmbedding_qd2_nq4',
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
-                'description': "Initialized NeuMF weights from pretrained vanilla model. Quantum Circuit using AngleEmbeddings + StronglyEntanglingLayers. Qubit depth of 2, and 4 qubits. Trained for 10 epochs to see whether qubit depth increases accuracy."
+                'description': "Train AngleEmbedding circuit from scratch, this time with set seed."
                 }
 
 set_global_seed(neumf_config['seed'], use_cuda=neumf_config['use_cuda'])

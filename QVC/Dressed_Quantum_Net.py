@@ -7,8 +7,27 @@ class DressedQuantumNetwork(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
+        self.circuit_type = config.get('circuit_type', 'strongly_entangling')
+        self.use_residual = config.get('use_residual', False)
+        
         self.quantum_device = qml.device('lightning.qubit', wires=self.config['n_qubits'])
-        num_params = self.config["q_depth"] * self.config["n_qubits"] * 3
+        
+        # Determine number of parameters and quantum function based on circuit type
+        if self.circuit_type == 'strongly_entangling':
+            num_params = self.config["q_depth"] * self.config["n_qubits"] * 3
+            q_func = self.strongly_entangling_layers
+        elif self.circuit_type == 'data_reuploading':
+            num_params = self.config["q_depth"] * self.config["n_qubits"] * 2
+            q_func = self.data_reuploading_circuit
+        elif self.circuit_type == 'iqp':
+            num_params = self.config["q_depth"] * self.config["n_qubits"]
+            q_func = self.iqp_circuit
+        elif self.circuit_type == 'mps':
+            num_params = self.config["q_depth"] * self.config["n_qubits"]
+            q_func = self.mps_circuit
+        else:
+            raise ValueError(f"Unknown circuit type: {self.circuit_type}")
+            
         self.q_params = nn.Parameter(self.config['q_delta'] * torch.randn(num_params))
 
         # Traditional layers
@@ -19,7 +38,7 @@ class DressedQuantumNetwork(nn.Module):
             nn.Linear(16, self.config["latent_dim_mlp"])
         )
         
-        self.quantum_net = qml.QNode(self.strongly_entangling_layers, self.quantum_device, interface="torch", diff_method="best")
+        self.quantum_net = qml.QNode(q_func, self.quantum_device, interface="torch", diff_method="best")
         self.device = torch.device(f"cuda:{config['device_id']}" if config['use_cuda'] else "cpu")
 
     def export_circuit_text(self):
@@ -43,6 +62,10 @@ class DressedQuantumNetwork(nn.Module):
             q_out.append(q_out_elem.unsqueeze(0))
 
         q_out = torch.cat(q_out, dim=0).to(q_in.device)
+        
+        if self.use_residual:
+            q_out = q_out + q_in
+            
         return self.post_net(q_out)
 
     
@@ -92,6 +115,46 @@ class DressedQuantumNetwork(nn.Module):
         for k in range(self.config["q_depth"]):
             self.entangling_layer(self.config["n_qubits"])
             self.RY_layer(q_weights[k])
+
+    def data_reuploading_circuit(self, q_input_features, q_weights_flat):
+        """
+        Interleaves data embedding with trainable rotations.
+        Uses 2 parameters per qubit per layer (RY and RZ).
+        """
+        q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"], 2)
+        for layer in range(self.config["q_depth"]):
+            qml.AngleEmbedding(features=q_input_features, wires=range(self.config["n_qubits"]), rotation='Y')
+            for i in range(self.config["n_qubits"]):
+                qml.RY(q_weights[layer, i, 0], wires=i)
+                qml.RZ(q_weights[layer, i, 1], wires=i)
+            for i in range(self.config["n_qubits"] - 1):
+                qml.CZ(wires=[i, i + 1])
+            qml.CZ(wires=[self.config["n_qubits"] - 1, 0])
+        return tuple([qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])])
+
+    def iqp_circuit(self, q_input_features, q_weights_flat):
+        """
+        Uses IQPEmbedding to capture complex feature cross-correlations.
+        """
+        q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"])
+        qml.IQPEmbedding(features=q_input_features, wires=range(self.config["n_qubits"]))
+        qml.BasicEntanglingLayers(weights=q_weights, wires=range(self.config["n_qubits"]))
+        return tuple([qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])])
+
+    def mps_circuit(self, q_input_features, q_weights_flat):
+        """
+        Matrix Product State (MPS) inspired layer. 
+        Highly resilient to barren plateaus.
+        """
+        q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"])
+        qml.AngleEmbedding(features=q_input_features, wires=range(self.config["n_qubits"]), rotation='Y')
+        for k in range(self.config["q_depth"]):
+            # Sweep left to right (MPS style)
+            for i in range(self.config["n_qubits"] - 1):
+                qml.RY(q_weights[k, i], wires=i)
+                qml.RY(q_weights[k, i+1], wires=i+1)
+                qml.CNOT(wires=[i, i+1])
+        return tuple([qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])])
 
         # Expectation values in the Z basis
         exp_vals = [qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])]

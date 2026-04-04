@@ -47,36 +47,36 @@ base_config = {
                 }
 
 experiments = [
-    # {
-    #     'circuit_type': 'strongly_entangling',
-    #     'use_residual': False,
-    #     'alias': 'exp_strongly_entangling',
-    #     'description': 'Baseline strongly entangling layers without residual connection.'
-    # },
-    # {
-    #     'circuit_type': 'data_reuploading',
-    #     'use_residual': False,
-    #     'alias': 'exp_data_reuploading',
-    #     'description': 'Data re-uploading circuit for better representational capacity.'
-    # },
-    # {
-    #     'circuit_type': 'iqp',
-    #     'use_residual': False,
-    #     'alias': 'exp_iqp',
-    #     'description': 'IQP embedding to capture complex feature cross-correlations.'
-    # },
-    {
-        'circuit_type': 'mps',
-        'use_residual': False,
-        'alias': 'exp_mps',
-        'description': 'Tree Tensor Network / MPS inspired layer, resilient to barren plateaus.'
-    },
     {
         'circuit_type': 'strongly_entangling',
-        'use_residual': True,
-        'alias': 'exp_strongly_entangling_residual',
-        'description': 'Strongly entangling layers with residual connection to fight gradient bottleneck.'
-    }
+        'use_residual': False,
+        'alias': 'exp_strongly_entangling',
+        'description': 'Baseline strongly entangling layers without residual connection.'
+    },
+    {
+        'circuit_type': 'data_reuploading',
+        'use_residual': False,
+        'alias': 'exp_data_reuploading',
+        'description': 'Data re-uploading circuit for better representational capacity.'
+    },
+    {
+        'circuit_type': 'iqp',
+        'use_residual': False,
+        'alias': 'exp_iqp',
+        'description': 'IQP embedding to capture complex feature cross-correlations.'
+    },
+    # {
+    #     'circuit_type': 'mps',
+    #     'use_residual': False,
+    #     'alias': 'exp_mps',
+    #     'description': 'Tree Tensor Network / MPS inspired layer, resilient to barren plateaus.'
+    # },
+    # {
+    #     'circuit_type': 'strongly_entangling',
+    #     'use_residual': True,
+    #     'alias': 'exp_strongly_entangling_residual',
+    #     'description': 'Strongly entangling layers with residual connection to fight gradient bottleneck.'
+    # }
 ]
 
 # Load Data

@@ -155,10 +155,6 @@ class DressedQuantumNetwork(nn.Module):
                 qml.RY(q_weights[k, i+1], wires=i+1)
                 qml.CNOT(wires=[i, i+1])
         return tuple([qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])])
-
-        # Expectation values in the Z basis
-        exp_vals = [qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])]
-        return tuple(exp_vals)
     
     # 2nd option StronglyEntanglingLayers & AngleEmbedding (commented out in the code below)
     def strongly_entangling_layers(self, q_input_features, q_weights_flat):

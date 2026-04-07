@@ -177,12 +177,12 @@ class Engine(object):
             hit_ratio, ndcg = self._metron.cal_hit_ratio(), self._metron.cal_ndcg()
             self._writer.add_scalar('performance/HR', hit_ratio, epoch_id)
             self._writer.add_scalar('performance/NDCG', ndcg, epoch_id)
-            print('[Evluating Epoch {}] HR = {:.4f}, NDCG = {:.4f}'.format(epoch_id, hit_ratio, ndcg))
+            print('[Evaluating Epoch {}] HR = {:.4f}, NDCG = {:.4f}'.format(epoch_id, hit_ratio, ndcg))
             return hit_ratio, ndcg
         else:
             mse = self._metron.cal_mse()
             self._writer.add_scalar('performance/MSE', mse, epoch_id)
-            print('[Evluating Epoch {}] MSE = {:.4f}'.format(epoch_id, mse))
+            print('[Evaluating Epoch {}] MSE = {:.4f}'.format(epoch_id, mse))
             return mse
 
     def save(self, alias, epoch_id, hit_ratio=None, ndcg=None, mse=None):

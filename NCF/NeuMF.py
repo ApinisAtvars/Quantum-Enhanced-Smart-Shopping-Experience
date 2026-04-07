@@ -15,6 +15,8 @@ class NeuMF(torch.nn.Module):
         self.latent_dim_mf = config['latent_dim_mf']
         self.latent_dim_mlp = config['latent_dim_mlp']
         self.are_ratings_explicit = config['are_ratings_explicit']
+        self.add_pre_post_net_layers = config['add_pre_post_net_layers']
+        self.num_qubits = config['n_qubits']
 
         self.embedding_user_mlp = torch.nn.Embedding(num_embeddings=self.num_users, embedding_dim=self.latent_dim_mlp)
         self.embedding_item_mlp = torch.nn.Embedding(num_embeddings=self.num_items, embedding_dim=self.latent_dim_mlp)
@@ -29,6 +31,14 @@ class NeuMF(torch.nn.Module):
 
         self.affine_output = torch.nn.Linear(in_features=config['layers'][-1] + config['latent_dim_mf'], out_features=1)
         self.logistic = torch.nn.Sigmoid() # Only applied if the ratings are implicit
+
+        if config['add_pre_post_net_layers']:
+            self.pre_net = nn.Linear(config['layers'][-1], self.num_qubits)
+            self.post_net = nn.Sequential(
+                nn.Linear(self.num_qubits, 16),
+                nn.ReLU(),
+                nn.Linear(16, config["latent_dim_mlp"])
+            )
 
         # Initialize model parameters with a Gaussian distribution (with a mean of 0 and standard deviation of 0.01)
         if config['weight_init_gaussian']:
@@ -52,6 +62,9 @@ class NeuMF(torch.nn.Module):
 
         # Same as in QVC/NeuMF_QVC.py to load pretrained NeuMF weights
         mlp_vector = self.final_mlp_ff_layer(mlp_vector)
+
+        if self.add_pre_post_net_layers:
+            mlp_vector = self.post_net(self.pre_net(mlp_vector))
 
         vector = torch.cat([mlp_vector, mf_vector], dim=-1)
         logits = self.affine_output(vector)

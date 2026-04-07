@@ -10,7 +10,7 @@ import os
 
 RATING_TYPE = 'implicit'  # 'explicit' or 'implicit'
 
-neumf_config = {'alias': '31_03_subset_vanilla_neumf',
+neumf_config = {'alias': '07_04_subset_classical_baseline_nq2',
                 'seed': 42,
                 'num_epoch': 10, # original 100, less now because an epoch takes 40 min for implicit NeuMF
                 'batch_size': 256, # original 256
@@ -32,7 +32,9 @@ neumf_config = {'alias': '31_03_subset_vanilla_neumf',
                 'pretrain_mlp': 'checkpoints/{}'.format('mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model'),
                 'model_dir': 'checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model',
                 'data_path': r"data\ncf_preprocessed\ratings_subset.csv",
-                'are_ratings_explicit': RATING_TYPE == 'explicit'
+                'are_ratings_explicit': RATING_TYPE == 'explicit',
+                'add_pre_post_net_layers': True, # Whether to add post_net, as in QVC/Dressed_Quantum_Net.py
+                'n_qubits': 2, # Number of neurons in pre_net. Needed to have a baseline when n_qubits changed in QVC/train.py
                 }
 
 set_global_seed(neumf_config['seed'], use_cuda=neumf_config['use_cuda'])

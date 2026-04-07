@@ -138,7 +138,7 @@ class DressedQuantumNetwork(nn.Module):
         """
         q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"])
         qml.IQPEmbedding(features=q_input_features, wires=range(self.config["n_qubits"]))
-        qml.BasicEntanglingLayers(weights=q_weights, wires=range(self.config["n_qubits"]))
+        qml.BasicEntanglerLayers(weights=q_weights, wires=range(self.config["n_qubits"]))
         return tuple([qml.expval(qml.PauliZ(position)) for position in range(self.config["n_qubits"])])
 
     def mps_circuit(self, q_input_features, q_weights_flat):

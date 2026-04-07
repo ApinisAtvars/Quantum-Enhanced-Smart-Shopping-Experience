@@ -47,18 +47,18 @@ base_config = {
                 }
 
 experiments = [
-    {
-        'circuit_type': 'strongly_entangling',
-        'use_residual': False,
-        'alias': 'exp_strongly_entangling',
-        'description': 'Baseline strongly entangling layers without residual connection.'
-    },
-    {
-        'circuit_type': 'data_reuploading',
-        'use_residual': False,
-        'alias': 'exp_data_reuploading',
-        'description': 'Data re-uploading circuit for better representational capacity.'
-    },
+    # {
+    #     'circuit_type': 'strongly_entangling',
+    #     'use_residual': False,
+    #     'alias': 'exp_strongly_entangling',
+    #     'description': 'Baseline strongly entangling layers without residual connection.'
+    # },
+    # {
+    #     'circuit_type': 'data_reuploading',
+    #     'use_residual': False,
+    #     'alias': 'exp_data_reuploading',
+    #     'description': 'Data re-uploading circuit for better representational capacity.'
+    # },
     {
         'circuit_type': 'iqp',
         'use_residual': False,

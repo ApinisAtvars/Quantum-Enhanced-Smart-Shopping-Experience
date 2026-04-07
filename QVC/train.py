@@ -74,31 +74,31 @@ experiments = [
         'alias': '07_04_exp_res_se_deeper',
         'description': 'Deeper circuit: Increased depth to 4 for stronger entanglement.'
     },
-    {
-        'circuit_type': 'strongly_entangling',
-        'use_residual': True,
-        'n_qubits': 4,
-        'q_depth': 2,
-        'q_delta': 0.1,
-        'alias': '07_04_exp_res_se_high_delta',
-        'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state.'
-    },
-    {
-        'circuit_type': 'data_reuploading',
-        'use_residual': True,
-        'n_qubits': 4,
-        'q_depth': 2,
-        'alias': '07_04_exp_res_data_reup',
-        'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity.'
-    },
-    {
-        'circuit_type': 'mps',
-        'use_residual': True,
-        'n_qubits': 4,
-        'q_depth': 4,
-        'alias': '07_04_exp_res_mps_deep',
-        'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit.'
-    }
+    # {
+    #     'circuit_type': 'strongly_entangling',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 2,
+    #     'q_delta': 0.1,
+    #     'alias': '07_04_exp_res_se_high_delta',
+    #     'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state.'
+    # },
+    # {
+    #     'circuit_type': 'data_reuploading',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 2,
+    #     'alias': '07_04_exp_res_data_reup',
+    #     'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity.'
+    # },
+    # {
+    #     'circuit_type': 'mps',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 4,
+    #     'alias': '07_04_exp_res_mps_deep',
+    #     'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit.'
+    # }
 ]
 
 # Load Data

@@ -47,36 +47,58 @@ base_config = {
                 }
 
 experiments = [
-    # {
-    #     'circuit_type': 'strongly_entangling',
-    #     'use_residual': False,
-    #     'alias': 'exp_strongly_entangling',
-    #     'description': 'Baseline strongly entangling layers without residual connection.'
-    # },
-    # {
-    #     'circuit_type': 'data_reuploading',
-    #     'use_residual': False,
-    #     'alias': 'exp_data_reuploading',
-    #     'description': 'Data re-uploading circuit for better representational capacity.'
-    # },
     {
-        'circuit_type': 'iqp',
-        'use_residual': False,
-        'alias': 'exp_iqp',
-        'description': 'IQP embedding to capture complex feature cross-correlations.'
+        'circuit_type': 'strongly_entangling',
+        'use_residual': True,
+        'n_qubits': 4,
+        'q_depth': 2,
+        'q_delta': 0.01,
+        'alias': '07_04_exp_res_se_base',
+        'description': 'Baseline winner: Strongly entangling (nq=4, qd=2) with residual connection.'
     },
-    # {
-    #     'circuit_type': 'mps',
-    #     'use_residual': False,
-    #     'alias': 'exp_mps',
-    #     'description': 'Tree Tensor Network / MPS inspired layer, resilient to barren plateaus.'
-    # },
-    # {
-    #     'circuit_type': 'strongly_entangling',
-    #     'use_residual': True,
-    #     'alias': 'exp_strongly_entangling_residual',
-    #     'description': 'Strongly entangling layers with residual connection to fight gradient bottleneck.'
-    # }
+    {
+        'circuit_type': 'strongly_entangling',
+        'use_residual': True,
+        'n_qubits': 6,
+        'q_depth': 2,
+        'q_delta': 0.01,
+        'alias': '07_04_exp_res_se_wider',
+        'description': 'Wider circuit: Increased qubits to 6 for higher dimensional quantum latent space.'
+    },
+    {
+        'circuit_type': 'strongly_entangling',
+        'use_residual': True,
+        'n_qubits': 4,
+        'q_depth': 4,
+        'q_delta': 0.01,
+        'alias': '07_04_exp_res_se_deeper',
+        'description': 'Deeper circuit: Increased depth to 4 for stronger entanglement.'
+    },
+    {
+        'circuit_type': 'strongly_entangling',
+        'use_residual': True,
+        'n_qubits': 4,
+        'q_depth': 2,
+        'q_delta': 0.1,
+        'alias': '07_04_exp_res_se_high_delta',
+        'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state.'
+    },
+    {
+        'circuit_type': 'data_reuploading',
+        'use_residual': True,
+        'n_qubits': 4,
+        'q_depth': 2,
+        'alias': '07_04_exp_res_data_reup',
+        'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity.'
+    },
+    {
+        'circuit_type': 'mps',
+        'use_residual': True,
+        'n_qubits': 4,
+        'q_depth': 4,
+        'alias': '07_04_exp_res_mps_deep',
+        'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit.'
+    }
 ]
 
 # Load Data

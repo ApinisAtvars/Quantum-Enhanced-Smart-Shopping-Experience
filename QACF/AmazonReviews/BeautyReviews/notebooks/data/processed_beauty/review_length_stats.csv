@@ -1,0 +1,2 @@
+n_reviews,mean_words,std_words,min_words,max_words,sample_p50_words,sample_p90_words,sample_p99_words
+883636,0.0,0.0,0,0,0.0,0.0,0.0

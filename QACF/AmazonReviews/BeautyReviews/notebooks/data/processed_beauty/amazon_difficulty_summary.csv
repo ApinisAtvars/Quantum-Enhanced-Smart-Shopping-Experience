@@ -1,0 +1,4 @@
+section,metric,value
+amazon_difficulty,matrix_sparsity,0.9999937266836512
+amazon_difficulty,user_share_le_5,0.8687677574937295
+amazon_difficulty,item_share_le_5,0.9974133547240979

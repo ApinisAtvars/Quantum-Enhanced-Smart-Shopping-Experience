@@ -1,0 +1,46 @@
+{
+  "seed": 42,
+  "sample_users": 800,
+  "n_qubits": 6,
+  "k_range": [
+    4,
+    10
+  ],
+  "kernel_alpha": 0.45,
+  "noisy_shots": 4096,
+  "noise_probability": 0.01,
+  "noisy_stability": {
+    "backend": "qiskit_aer",
+    "mae": 0.8257768964076397,
+    "corr": 0.022914621208011052,
+    "n": 80
+  },
+  "best": {
+    "kernel": "quantum_lloyd_fallback",
+    "mode": "quantum_lloyd_fallback",
+    "k": 10,
+    "iters": -1,
+    "silhouette": 0.030107826447552992,
+    "davies_bouldin": 6.221360353476873,
+    "inertia": NaN
+  },
+  "silhouette_overall": 0.026182843518003516,
+  "davies_bouldin": 7.3197279552744705,
+  "per_cluster_silhouette": {
+    "0": 0.1143095815177536,
+    "1": 0.2918221309333096,
+    "2": 0.24790594115323578,
+    "3": -0.008643137360380209,
+    "4": 0.00929903113633173,
+    "5": 0.04285148206671372,
+    "6": 0.4680332581119154,
+    "7": 0.020016138915019438,
+    "8": 0.0023319892404106085,
+    "9": -0.0013891414260257065
+  },
+  "entanglement_comparison": {
+    "best_plain_silhouette": 0.030107826447552992,
+    "best_entangled_silhouette": 0.030107826447552992,
+    "delta": 0.0
+  }
+}

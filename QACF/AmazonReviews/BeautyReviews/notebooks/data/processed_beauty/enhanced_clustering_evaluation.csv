@@ -1,0 +1,2 @@
+method,k,silhouette_overall,davies_bouldin,min_cluster_sil,max_cluster_sil,cluster_size_std,target_achieved,gamma,poly_power
+quantum_lloyd_fallback,10,0.030107826447552992,6.221360353476873,-0.006165454464401249,0.5015033232249817,134.22220382634163,False,2.0,2

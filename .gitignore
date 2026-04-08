@@ -6,6 +6,9 @@ __pycache__/
 # Large/generated datasets
 QACF/data/
 QACF/AmazonReviews/raw/
+QACF/AmazonReviews/CosmeticsReviews/data/
+QACF/AmazonReviews/AppliencesReviews/data/
+
 
 
 # Local reference PDFs

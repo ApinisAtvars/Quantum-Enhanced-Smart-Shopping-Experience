@@ -16,7 +16,7 @@
     "raw_silhouette": -0.6984766569929708,
     "refined_routing_groups": 4,
     "refined_silhouette": 0.9255518443163947,
-    "d_wave_qubo_energy": 65.76879519843169,
+    "d_wave_qubo_energy": 64.87804407660587,
     "d_wave_qubo_clusters": 4
   },
   "results_at_0_drop": {

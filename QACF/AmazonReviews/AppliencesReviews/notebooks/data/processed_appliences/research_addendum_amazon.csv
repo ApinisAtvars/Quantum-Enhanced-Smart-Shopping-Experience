@@ -1,0 +1,8 @@
+claim_element,value,evidence_type,status
+Research Hypothesis,Quantum KMeans clustering reduces sparsity effects in hybrid recommendations,Qualitative,STATED
+HR@10 improvement (≥80% sparsity drop),0.004444,Empirical,POSITIVE
+NDCG@10 improvement (≥80% sparsity drop),0.004197,Empirical,POSITIVE
+HR@10 paired t-test p-value,0.089094,Statistical,NOT_SIGNIFICANT
+Multi-seed robustness trials,3 independent seeds,Methodological,ROBUST
+Component ablation,12 ablation configurations tested,Empirical,COMPLETE
+Final claim status,PARTIALLY_SUPPORTED,Synthesis,PARTIALLY_SUPPORTED

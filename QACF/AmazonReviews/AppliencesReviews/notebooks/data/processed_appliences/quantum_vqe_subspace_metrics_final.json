@@ -1,0 +1,21 @@
+{
+  "method_default": "vqe_adiabatic",
+  "sample_users": 600,
+  "subspace_encoding": "4x16",
+  "vqe_shots": 2048,
+  "ansatz": "HardwareEfficientAnsatz_reps=2",
+  "variational_steps": 10,
+  "variational_train_samples": 30,
+  "polynomial_power": 3,
+  "poly3_scale": 1.7671821143684,
+  "auto_k_range": [
+    4,
+    16
+  ],
+  "best_k": 10,
+  "silhouette": 0.06518925073789957,
+  "davies_bouldin": 7.226140938347688,
+  "target": 0.25,
+  "target_met": false,
+  "best_method_used": "quantum_lloyd_fallback"
+}

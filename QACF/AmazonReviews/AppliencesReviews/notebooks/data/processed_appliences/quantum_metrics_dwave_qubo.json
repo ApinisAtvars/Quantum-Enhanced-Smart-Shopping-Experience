@@ -1,0 +1,16 @@
+{
+  "method": "dimod_simulated_annealing",
+  "fast_mode": true,
+  "k": 8,
+  "n_samples": 320,
+  "num_reads": 48,
+  "num_sweeps": 600,
+  "one_hot_penalty": 1.4329166528417625,
+  "knn_edges": 6,
+  "energy": -1.3196768122725189e-09,
+  "silhouette": -0.01306861449495239,
+  "davies_bouldin": null,
+  "runtime_s": 252.9889395236969,
+  "improvement_over_gate_best": -0.08759656155336616,
+  "clusters_found": 8
+}

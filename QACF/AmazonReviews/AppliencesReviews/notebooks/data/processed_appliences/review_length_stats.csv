@@ -1,0 +1,2 @@
+n_reviews,mean_words,std_words,min_words,max_words,sample_p50_words,sample_p90_words,sample_p99_words
+602777,35.063333537941894,65.68917610912621,0,2996,15.0,78.099609375,310.0205078125

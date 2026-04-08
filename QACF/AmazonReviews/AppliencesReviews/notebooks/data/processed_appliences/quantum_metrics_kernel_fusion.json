@@ -1,0 +1,10 @@
+{
+  "fusion_weights": {
+    "kernel_ent": 0.6,
+    "kernel_vqe_base": 0.4
+  },
+  "best_k": 10,
+  "method": "hdbscan",
+  "silhouette": 0.13082641277003185,
+  "improvement_over_best": 0.056298465711618076
+}

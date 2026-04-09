@@ -1,0 +1,2 @@
+sample_users,k,use_dwave,selected_features,solver,silhouette_gate,db_gate,runtime_gate_s,silhouette_dwave,db_dwave,runtime_dwave_s,best_energy,chain_break_fraction,hybrid_time_s,noisy_shots,noisy_corr,noisy_mae
+320,6,True,32,SimulatedAnnealingSampler_local,0.7864005637008928,2.376863872089005,0.006939999999303836,-0.11362862615930636,101.20725572523865,1828.9113954000004,12.234306350893348,,1828.9113954000004,1024,0.0862458391456352,0.8463796587144049

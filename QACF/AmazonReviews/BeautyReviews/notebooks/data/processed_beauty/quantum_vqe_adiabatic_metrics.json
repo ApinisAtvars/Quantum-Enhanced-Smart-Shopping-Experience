@@ -1,0 +1,14 @@
+{
+  "method": "vqe_adiabatic",
+  "kernel_source": "entangled",
+  "polynomial_kernel": true,
+  "poly_power": 2,
+  "auto_k": true,
+  "best_k": 4,
+  "silhouette": 0.722843451449842,
+  "davies_bouldin": 0.49195317597140764,
+  "sample_users_config": 800,
+  "loaded_users": 800,
+  "silhouette_target": 0.25,
+  "target_met": true
+}

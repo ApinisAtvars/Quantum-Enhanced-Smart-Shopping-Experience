@@ -1,0 +1,61 @@
+{
+  "sample_users": 320,
+  "k": 6,
+  "use_dwave": true,
+  "selected_feature_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32
+  ],
+  "solver": "SimulatedAnnealingSampler_local",
+  "energy_best_sample": 12.234306350893348,
+  "chain_break_fraction": null,
+  "hybrid_time_s": 1828.9113954000004,
+  "gate_baseline": {
+    "silhouette": 0.7864005637008928,
+    "davies_bouldin": 2.376863872089005,
+    "runtime_s": 0.006939999999303836,
+    "objective": 39.123250126838684,
+    "iters": 9
+  },
+  "dwave_hybrid": {
+    "silhouette": -0.11362862615930636,
+    "davies_bouldin": 101.20725572523865,
+    "runtime_s": 1828.9113954000004
+  },
+  "n_isq_noisy_comparison": {
+    "shots": 1024,
+    "corr": 0.0862458391456352,
+    "mae": 0.8463796587144049,
+    "n": 40
+  }
+}

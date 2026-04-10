@@ -68,54 +68,6 @@ class DressedQuantumNetwork(nn.Module):
             
         return self.post_net(q_out)
 
-    
-    def H_layer(self, n_qubits):
-        """
-        Layer of single-qubit Hadamard gates.
-        """
-        for idx in range(n_qubits):
-            qml.Hadamard(wires=idx)
-    
-    def RY_layer(self, w):
-        """
-        Layer of parametrized qubit rotations around the y axis.
-        """
-        for idx, element in enumerate(w):
-            qml.RY(element, wires=idx)
-    
-    def entangling_layer(self, nqubits):
-        """
-        Layer of CNOTs followed by another shifted layer of CNOT.
-        """
-        # In other words it should apply something like :
-        # CNOT  CNOT  CNOT  CNOT...  CNOT
-        #   CNOT  CNOT  CNOT...  CNOT
-        for i in range(0, nqubits - 1, 2):  # Loop over even indices: i=0,2,...N-2
-            qml.CNOT(wires=[i, i + 1])
-        for i in range(1, nqubits - 1, 2):  # Loop over odd indices:  i=1,3,...N-3
-            qml.CNOT(wires=[i, i + 1])
-
-    # 1st option from source (1st line)
-    # Not very good
-    def quantum_net(self, q_input_features, q_weights_flat):
-        """
-        The variational quantum circuit.
-        """
-
-        # Reshape weights
-        q_weights = q_weights_flat.reshape(self.config["q_depth"], self.config["n_qubits"])
-
-        # Start from state |+> , unbiased w.r.t. |0> and |1>
-        self.H_layer(self.config["n_qubits"])
-
-        # Embed features in the quantum node
-        self.RY_layer(q_input_features)
-
-        # Sequence of trainable variational layers
-        for k in range(self.config["q_depth"]):
-            self.entangling_layer(self.config["n_qubits"])
-            self.RY_layer(q_weights[k])
-
     def data_reuploading_circuit(self, q_input_features, q_weights_flat):
         """
         Interleaves data embedding with trainable rotations.

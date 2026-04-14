@@ -1,0 +1,74 @@
+# Experiment Configuration
+# Practical settings for reproducible research observations
+
+general:
+  base_seed: 42
+  num_trials: 3
+  seeds: [42, 43, 44]
+  num_iterations: 15
+  output_dir: "results"
+  plots_dir: "plots"
+
+samplers:
+  simulated_annealing:
+    num_reads: 20
+    num_sweeps: 200
+    seed: 42
+  path_integral:
+    num_reads: 20
+    seed: 42
+  tabu:
+    num_reads: 1
+    timeout: 100
+    seed: 42
+  steepest_descent:
+    num_reads: 10
+    seed: 42
+  exact:
+    max_rank: 15
+
+movielens:
+  data_path: "data/u.data"
+
+benchmark:
+  reference_subblock: [50, 50]
+  rank: 5
+  primary_methods:
+    - "Repo_ALS"
+    - "Repo_SGD"
+    - "NBMF_SA"
+    - "NBMF_PathIntegral"
+  supplemental_methods:
+    - "NMF_MU"
+  nbmf_iterations: 15
+  als_iterations: 15
+  sgd_epochs: 15
+  repo_als_reg: 0.0
+  repo_sgd_lr: 0.01
+  repo_sgd_reg: 0.0
+
+correctness:
+  sizes:
+    - [8, 8]
+  ranks: [2, 4]
+  methods:
+    - "NBMF_Exact"
+    - "NBMF_SA"
+
+convergence:
+  synthetic_size: [20, 20]
+  ranks: [2, 5]
+
+scalability:
+  synthetic_grid:
+    sizes: [[10, 10], [20, 20], [50, 50]]
+    ranks: [2, 5, 10]
+    samplers: ["simulated_annealing"]
+  movielens_grid:
+    sizes: [[30, 30], [50, 50]]
+    ranks: [2, 5]
+    samplers: ["simulated_annealing"]
+  scalability_seeds: [42, 43]
+  feasibility:
+    exact_sizes: [[8, 8], [10, 10], [15, 15]]
+    exact_ranks: [2, 5, 10, 15]

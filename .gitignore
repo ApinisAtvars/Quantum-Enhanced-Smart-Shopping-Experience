@@ -22,3 +22,6 @@ data/*.zip
 
 # Outputs (regenerable)
 outputs/
+
+# Local archival snapshots (not for supervisor push)
+archive/

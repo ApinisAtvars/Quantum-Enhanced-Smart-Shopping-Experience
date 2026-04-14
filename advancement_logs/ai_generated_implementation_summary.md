@@ -1,4 +1,4 @@
-# Implementation Summary
+# AI-Generated Implementation Summary
 
 Date: 2026-04-07
 
@@ -6,23 +6,23 @@ Date: 2026-04-07
 
 The codebase from Weeks 3–4 was almost entirely reusable. The following modules were kept as-is:
 
-- **ALS/model.py** — Alternating Least Squares for dense matrix factorization (per-user/per-item regularized least-squares solves).
-- **SGD/model.py** — Biased SGD with global mean, user bias, item bias, and latent factors.
-- **NBMF/model.py** — Nonneg/Binary MF via alternating NNLS + QUBO. Each iteration updates W row-wise via scipy NNLS, then H column-wise by solving a QUBO per column.
-- **NBMF/qubo.py** — QUBO construction: minimizes ||v_j - Wq||^2 over binary q, expanding to diagonal (W^T W)_{ii} - 2(W^T v)_i and off-diagonal 2(W^T W)_{ij} terms.
-- **NBMF/samplers.py** — Sampler dispatch for SimulatedAnnealing, PathIntegral, Tabu, SteepestDescent, ExactSolver (all from dwave-samplers/dimod).
-- **common/** — Data loading (MovieLens u.data), synthetic data generation (nonneg W, binary H), metrics, IO utilities, logging.
+- **models/als.py** — Alternating Least Squares for dense matrix factorization (per-user/per-item regularized least-squares solves).
+- **models/sgd.py** — Biased SGD with global mean, user bias, item bias, and latent factors.
+- **models/nbmf.py** — Nonneg/Binary MF via alternating NNLS + QUBO. Each iteration updates W row-wise via scipy NNLS, then H column-wise by solving a QUBO per column.
+- **models/qubo.py** — QUBO construction: minimizes ||v_j - Wq||^2 over binary q, expanding to diagonal (W^T W)_{ii} - 2(W^T v)_i and off-diagonal 2(W^T W)_{ij} terms.
+- **models/samplers.py** — Sampler dispatch for SimulatedAnnealing, PathIntegral, Tabu, SteepestDescent, ExactSolver (all from dwave-samplers/dimod).
+- **utils/** — Data loading (MovieLens u.data), synthetic data generation (nonneg W, binary H), metrics, IO utilities, logging.
 - **experiments/baseline_wrappers.py** — Adapts ALS and BiasedSGD to operate on dense matrices for fair comparison with NBMF.
 
 ## What Was Changed
 
-1. **config/experiment_config.yaml** — Simplified from 10 seeds to 3, reduced matrix sizes and rank grid for practical runtime (~90s total). Benchmark subblock reduced from 200×200 to 50×50.
-2. **experiments/run_benchmarks.py** — Streamlined to run 4 primary methods (ALS, SGD, NBMF+SA, NBMF+PathIntegral) and 1 supplemental (NMF-MU). Removed Tabu/SteepestDescent from benchmark (kept available in the sampler registry for manual use).
-3. **experiments/run_convergence.py** — Runs on 20×20 synthetic with ranks {2, 5}, compares NBMF+SA, NBMF+PathIntegral, NBMF+Exact, ALS, and SGD.
-4. **experiments/run_scalability.py** — Synthetic sizes {10, 20, 50} and MovieLens {30, 50} with ranks {2, 5, 10}. ExactSolver feasibility on sizes {8, 10, 15}.
-5. **experiments/generate_plots.py** — Rewritten to produce clean plots without the old compliance matrix generation.
+1. **config/experiment.yaml** — Simplified from 10 seeds to 3, reduced matrix sizes and rank grid for practical runtime (~90s total). Benchmark subblock reduced from 200×200 to 50×50.
+2. **experiments/benchmark.py** — Streamlined to run 4 primary methods (ALS, SGD, NBMF+SA, NBMF+PathIntegral) and 1 supplemental (NMF-MU). Removed Tabu/SteepestDescent from benchmark (kept available in the sampler registry for manual use).
+3. **experiments/convergence.py** — Runs on 20×20 synthetic with ranks {2, 5}, compares NBMF+SA, NBMF+PathIntegral, NBMF+Exact, ALS, and SGD.
+4. **experiments/scalability.py** — Synthetic sizes {10, 20, 50} and MovieLens {30, 50} with ranks {2, 5, 10}. ExactSolver feasibility on sizes {8, 10, 15}.
+5. **experiments/plot_results.py** — Rewritten to produce clean plots without the old compliance matrix generation.
 6. **run_all.py** — New master script that runs the full pipeline (correctness → benchmark → convergence → scalability → plots) and reports status.
-7. **Archive** — Previous plots/, results/, research_logs/, and protocol.md moved to `archive/legacy_run_20260407_163135/`.
+7. **Archive** — Previous plots/, results/, advancement_logs/, and protocol.md moved to `archive/legacy_run_20260407_163135/`.
 
 ## Experiments Run
 

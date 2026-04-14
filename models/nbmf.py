@@ -3,8 +3,8 @@ import numpy as np
 from scipy.optimize import nnls
 from typing import Dict, List, Any, Optional
 
-from .qubo import build_qubo_dict
-from .samplers import get_sampler, sample_qubo
+from models.qubo import build_qubo_dict
+from models.samplers import get_sampler, sample_qubo
 
 
 class NBMF:

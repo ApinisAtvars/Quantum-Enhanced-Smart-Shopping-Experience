@@ -14,9 +14,9 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common.synthetic_data import generate_synthetic
-from common.logging_utils import get_logger
-from NBMF.model import NBMF
+from utils.synthetic import generate_synthetic
+from utils.logging import get_logger
+from models.nbmf import NBMF
 from experiments.baseline_wrappers import run_repo_als, run_repo_sgd
 
 logger = get_logger("Convergence")
@@ -40,7 +40,7 @@ def run_nbmf_convergence(V, k, sampler_name, num_iterations, num_reads, num_swee
 
 
 def main():
-    with open('config/experiment_config.yaml') as f:
+    with open('config/experiment.yaml') as f:
         cfg = yaml.safe_load(f)
 
     os.makedirs(cfg['general']['output_dir'], exist_ok=True)

@@ -18,9 +18,9 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common.io_utils import extract_dense_subblock
-from common.logging_utils import get_logger
-from NBMF.model import NBMF
+from utils.io import extract_dense_subblock
+from utils.logging import get_logger
+from models.nbmf import NBMF
 from experiments.baseline_wrappers import run_repo_als, run_repo_sgd
 
 logger = get_logger("Benchmark")
@@ -67,7 +67,7 @@ def run_nbmf(V, k, sampler_name, num_iterations, num_reads, num_sweeps, seed):
 
 
 def main():
-    with open('config/experiment_config.yaml') as f:
+    with open('config/experiment.yaml') as f:
         cfg = yaml.safe_load(f)
 
     os.makedirs(cfg['general']['output_dir'], exist_ok=True)

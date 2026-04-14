@@ -15,10 +15,10 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common.synthetic_data import generate_synthetic
-from common.logging_utils import get_logger
-from NBMF.model import NBMF
-from NBMF.qubo import build_qubo_dict, qubo_energy
+from utils.synthetic import generate_synthetic
+from utils.logging import get_logger
+from models.nbmf import NBMF
+from models.qubo import build_qubo_dict, qubo_energy
 
 logger = get_logger("Correctness")
 
@@ -51,7 +51,7 @@ def run_correctness_single(V, W_true, H_true, k, sampler_name, num_iterations,
 
 
 def main():
-    with open('config/experiment_config.yaml') as f:
+    with open('config/experiment.yaml') as f:
         cfg = yaml.safe_load(f)
 
     os.makedirs(cfg['general']['output_dir'], exist_ok=True)

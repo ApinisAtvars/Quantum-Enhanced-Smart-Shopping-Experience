@@ -24,8 +24,8 @@ from typing import List, Dict, Any, Tuple
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ALS.model import ALS
-from SGD.model import BiasedSGD
+from models.als import ALS
+from models.sgd import BiasedSGD
 
 
 def _build_als_dicts(V: np.ndarray):

@@ -14,10 +14,10 @@ import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common.synthetic_data import generate_synthetic
-from common.io_utils import extract_dense_subblock
-from common.logging_utils import get_logger
-from NBMF.model import NBMF
+from utils.synthetic import generate_synthetic
+from utils.io import extract_dense_subblock
+from utils.logging import get_logger
+from models.nbmf import NBMF
 
 logger = get_logger("Scalability")
 
@@ -64,7 +64,7 @@ def get_sampler_params(cfg, sampler_name):
 
 
 def main():
-    with open('config/experiment_config.yaml') as f:
+    with open('config/experiment.yaml') as f:
         cfg = yaml.safe_load(f)
 
     os.makedirs(cfg['general']['output_dir'], exist_ok=True)

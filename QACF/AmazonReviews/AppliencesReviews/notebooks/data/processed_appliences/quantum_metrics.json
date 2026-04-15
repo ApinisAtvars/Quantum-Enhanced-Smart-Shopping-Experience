@@ -11,8 +11,8 @@
   "noise_probability": 0.01,
   "noisy_stability": {
     "backend": "qiskit_aer",
-    "mae": 0.31244331878189824,
-    "corr": 0.2713405564646241,
+    "mae": 0.3126081137037732,
+    "corr": 0.26909943226702954,
     "n": 80
   },
   "best": {

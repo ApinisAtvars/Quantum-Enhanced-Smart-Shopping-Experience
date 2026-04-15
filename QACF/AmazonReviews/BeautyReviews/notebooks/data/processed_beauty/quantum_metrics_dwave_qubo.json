@@ -8,9 +8,9 @@
   "one_hot_penalty": 1.423970616959018,
   "knn_edges": 6,
   "energy": 4.271911847462434,
-  "silhouette": -0.005605480643558526,
+  "silhouette": -0.00578495337849362,
   "davies_bouldin": null,
-  "runtime_s": 257.64900255203247,
-  "improvement_over_gate_best": -0.03571330709111152,
+  "runtime_s": 288.2023854255676,
+  "improvement_over_gate_best": -0.03589277982604661,
   "clusters_found": 8
 }

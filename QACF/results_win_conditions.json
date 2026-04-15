@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "analysis": "Win Conditions for QACF",
+    "bonferroni_alpha": 0.004166666666666667,
+    "n_tests": 12,
+    "datasets": [
+      "ml-32m",
+      "books",
+      "appliances",
+      "beauty"
+    ]
+  },
+  "results": [
+    {
+      "condition_id": "A1",
+      "dataset": "ml-32m",
+      "metric": "Silhouette Score",
+      "quantum_mean": -0.0173123226431378,
+      "classical_mean": -0.016930946730810845,
+      "quantum_std": 0.0018240507654285975,
+      "classical_std": 0.0018001827698818672,
+      "p_value": 0.49456458933273706,
+      "p_value_corrected": "False",
+      "cohens_d": -0.2104542317987411,
+      "bootstrap_ci_lower": -0.0013426439003487705,
+      "bootstrap_ci_upper": 0.0006280706501642075,
+      "interpretation": "No Difference"
+    },
+    {
+      "condition_id": "A1",
+      "dataset": "books",
+      "metric": "Silhouette Score",
+      "quantum_mean": -0.016631876525789145,
+      "classical_mean": -0.018576237769177863,
+      "quantum_std": 0.0020923345725009914,
+      "classical_std": 0.0030078084403177964,
+      "p_value": 0.014566552440203911,
+      "p_value_corrected": "False",
+      "cohens_d": 0.7504788137031904,
+      "bootstrap_ci_lower": 0.0006213103861164464,
+      "bootstrap_ci_upper": 0.0032911315068699376,
+      "interpretation": "No Difference"
+    },
+    {
+      "condition_id": "A1",
+      "dataset": "appliances",
+      "metric": "Silhouette Score",
+      "quantum_mean": -0.01702196658381645,
+      "classical_mean": -0.017023532028538076,
+      "quantum_std": 0.002629732891743614,
+      "classical_std": 0.0016763920710723902,
+      "p_value": 0.9978703708733274,
+      "p_value_corrected": "False",
+      "cohens_d": 0.0007098889103515128,
+      "bootstrap_ci_lower": -0.0011240955599421266,
+      "bootstrap_ci_upper": 0.0010413380904137424,
+      "interpretation": "No Difference"
+    },
+    {
+      "condition_id": "A1",
+      "dataset": "beauty",
+      "metric": "Silhouette Score",
+      "quantum_mean": -0.017711848311184032,
+      "classical_mean": -0.017385523679097993,
+      "quantum_std": 0.0019837682364536205,
+      "classical_std": 0.0016701260471410674,
+      "p_value": 0.5466360004430171,
+      "p_value_corrected": "False",
+      "cohens_d": -0.17796302214507062,
+      "bootstrap_ci_lower": -0.0012056224116961305,
+      "bootstrap_ci_upper": 0.0006631834942927681,
+      "interpretation": "No Difference"
+    }
+  ]
+}

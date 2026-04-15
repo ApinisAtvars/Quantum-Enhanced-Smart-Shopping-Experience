@@ -5,6 +5,8 @@ scikit-learn
 matplotlib
 seaborn
 umap-learn
+hdbscan
+tqdm
 
 qiskit
 qiskit-aer

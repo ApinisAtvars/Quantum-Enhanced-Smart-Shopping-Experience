@@ -1,0 +1,3 @@
+model,hr_at_10,error
+NMF,,"Unable to allocate 520. GiB for an array with shape (186189, 749233) and data type float32"
+BPR,,"Unable to allocate 520. GiB for an array with shape (186189, 749233) and data type float32"

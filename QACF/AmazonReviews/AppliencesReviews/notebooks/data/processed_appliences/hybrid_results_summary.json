@@ -16,7 +16,7 @@
     "raw_silhouette": -0.7179609091469077,
     "refined_routing_groups": 2,
     "refined_silhouette": 0.9021709145901703,
-    "d_wave_qubo_energy": 293.64206796063013,
+    "d_wave_qubo_energy": 293.71709179562185,
     "d_wave_qubo_clusters": 2
   },
   "results_at_0_drop": {
@@ -41,7 +41,7 @@
     "p_value_columns_present": true
   },
   "ablation_study": {
-    "rows": 0,
+    "rows": 4,
     "results_file": "ablation_amazon.csv",
     "comparison_plot": "ablation_amazon_bar.png"
   },

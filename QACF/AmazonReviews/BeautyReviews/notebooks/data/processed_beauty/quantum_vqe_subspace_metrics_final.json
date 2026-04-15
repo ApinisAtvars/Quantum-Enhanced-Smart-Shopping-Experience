@@ -12,10 +12,10 @@
     4,
     16
   ],
-  "best_k": 14,
-  "silhouette": 0.6657441070582992,
-  "davies_bouldin": 0.43495080251663587,
+  "best_k": 10,
+  "silhouette": 0.5481310250311847,
+  "davies_bouldin": 2.690576972025916,
   "target": 0.25,
   "target_met": true,
-  "best_method_used": "vqe_adiabatic"
+  "best_method_used": "quantum_lloyd_fallback"
 }

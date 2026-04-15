@@ -5,12 +5,12 @@
   "n_samples": 320,
   "num_reads": 48,
   "num_sweeps": 600,
-  "one_hot_penalty": 1.443204879235161,
+  "one_hot_penalty": 1.4436685440066692,
   "knn_edges": 6,
-  "energy": 2.737579052336514e-09,
-  "silhouette": -0.012053034065999451,
+  "energy": -2.443812263663858e-09,
+  "silhouette": -0.01243906642353391,
   "davies_bouldin": null,
-  "runtime_s": 278.7694993019104,
-  "improvement_over_gate_best": -0.12581313287446125,
+  "runtime_s": 277.3445658683777,
+  "improvement_over_gate_best": -0.09263807789858675,
   "clusters_found": 8
 }

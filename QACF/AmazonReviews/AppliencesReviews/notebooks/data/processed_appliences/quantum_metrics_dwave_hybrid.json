@@ -37,25 +37,25 @@
     47
   ],
   "solver": "SimulatedAnnealingSampler_local",
-  "energy_best_sample": 32.09856775234766,
+  "energy_best_sample": 31.513361852736125,
   "chain_break_fraction": null,
-  "hybrid_time_s": 1509.1096532999982,
+  "hybrid_time_s": 1833.8809340000007,
   "gate_baseline": {
-    "silhouette": 0.14772347271191552,
-    "davies_bouldin": 1.383728895736722,
-    "runtime_s": 0.007720300000073621,
-    "objective": 211.5932238996029,
+    "silhouette": 0.14772352518508586,
+    "davies_bouldin": 1.3837290869629326,
+    "runtime_s": 0.007900399999925867,
+    "objective": 211.59322479367256,
     "iters": 12
   },
   "dwave_hybrid": {
-    "silhouette": -0.018715198796065542,
-    "davies_bouldin": 147.22762885767602,
-    "runtime_s": 1509.1096532999982
+    "silhouette": -0.017757043206497892,
+    "davies_bouldin": 40.404266542279785,
+    "runtime_s": 1833.8809340000007
   },
   "n_isq_noisy_comparison": {
     "shots": 1024,
-    "corr": -0.05987026461747646,
-    "mae": 0.49242845656302503,
+    "corr": -0.07620781430721414,
+    "mae": 0.48996263625052505,
     "n": 40
   }
 }

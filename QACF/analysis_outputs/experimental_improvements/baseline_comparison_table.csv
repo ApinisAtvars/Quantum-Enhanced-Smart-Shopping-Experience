@@ -1,0 +1,5 @@
+dataset,hr10_classical,hr10_hybrid,ndcg10_classical,ndcg10_hybrid
+MovieLens-UBCF,0.14333333333333334,0.16,,0.11576710146083405
+Amazon-Books,0.0,0.006666666666666667,,
+Amazon-Appliances,0.0,0.0033333333333333335,,
+Amazon-Fashion (BeautyReviews alias),0.0,0.0,,

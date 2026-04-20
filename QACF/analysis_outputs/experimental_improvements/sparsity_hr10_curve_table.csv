@@ -1,0 +1,20 @@
+sparsity,classical,hybrid,dataset,dropout_pct
+0.8,0.16,0.16,MovieLens-UBCF,80.0
+0.9,0.0,0.08,MovieLens-UBCF,90.0
+0.95,0.0,0.0,MovieLens-UBCF,95.0
+0.99,0.0,0.0,MovieLens-UBCF,99.0
+0.8,0.08,0.08,Amazon-Books,80.0
+0.9,0.0,0.0,Amazon-Books,90.0
+0.95,0.0,0.0,Amazon-Books,95.0
+0.99,0.08,0.04,Amazon-Books,99.0
+0.8,0.16,0.0,Amazon-Appliances,80.0
+0.9,0.125,0.0416666666666666,Amazon-Appliances,90.0
+0.95,0.0,0.0,Amazon-Appliances,95.0
+0.99,,,Amazon-Appliances,99.0
+0.0,0.0,0.0,Amazon-Fashion (BeautyReviews alias),0.0
+0.2,0.0,0.0,Amazon-Fashion (BeautyReviews alias),20.0
+0.4,0.0,0.0,Amazon-Fashion (BeautyReviews alias),40.0
+0.6,0.0,0.0,Amazon-Fashion (BeautyReviews alias),60.0
+0.8,0.0,0.0,Amazon-Fashion (BeautyReviews alias),80.0
+0.9,0.0,0.0,Amazon-Fashion (BeautyReviews alias),90.0
+0.95,0.0,0.0,Amazon-Fashion (BeautyReviews alias),95.0

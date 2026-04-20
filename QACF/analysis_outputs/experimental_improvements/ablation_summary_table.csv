@@ -1,0 +1,6 @@
+component_variant,hr10_hybrid,hr10_delta_vs_classical
+Full,0.14,-0.15
+No QUBO (D-Wave),0.14,-0.15
+No MMR,0.29,0.0
+No Novelty,0.11,-0.18
+No Shrinkage,0.22,-0.07

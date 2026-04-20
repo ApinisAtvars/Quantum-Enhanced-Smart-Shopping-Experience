@@ -1,0 +1,5 @@
+dataset,eval_users,candidate_pool,topn,routing_groups,d_wave_qubo_clusters,qubits,encoding_type
+MovieLens-UBCF,300,3500,10,,,"6 (UBCF), 5-6 (Amazon)","Angle + IQP (primary), amplitude/angle fusion (Amazon)"
+Amazon-Books,300,3500,10,4.0,4.0,"6 (UBCF), 5-6 (Amazon)","Angle + IQP (primary), amplitude/angle fusion (Amazon)"
+Amazon-Appliances,300,3500,10,2.0,2.0,"6 (UBCF), 5-6 (Amazon)","Angle + IQP (primary), amplitude/angle fusion (Amazon)"
+Amazon-Fashion (BeautyReviews alias),300,3500,10,2.0,2.0,"6 (UBCF), 5-6 (Amazon)","Angle + IQP (primary), amplitude/angle fusion (Amazon)"

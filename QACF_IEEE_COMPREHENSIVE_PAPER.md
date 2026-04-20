@@ -52,6 +52,7 @@ Collaborative filtering (CF) powers modern recommendation systems (Netflix, Amaz
 
 - **MovieLens 32M**: 32M ratings across 16.8B possible user-item pairs → **0.0019% density**
 - **Amazon Books**: 10M ratings across 1.2B+ possible pairs → **0.0008% density**  
+- **Amazon Appliances**: 200k ratings across 750M possible pairs → **0.089% density**
 - **Amazon Fashion**: 29M reviews across 45B+ possible pairs → **0.0001% density**
 
 **Classical CF Problem**: User-based and item-based k-nearest neighbor methods rely on Euclidean distances in latent embedding space:

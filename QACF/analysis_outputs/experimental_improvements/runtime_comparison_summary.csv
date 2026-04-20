@@ -1,0 +1,4 @@
+component,n_range,runtime_sec_mean,runtime_sec_min,runtime_sec_max,complexity,note
+Quantum kernel micro-benchmark (UBCF),50-300,0.00019191666675996667,0.0001701000001048,0.0002174000037484,O(N^2 q^2),Measured from runtime_complexity_ubcf.csv
+Classical routing / neighborhood scoring,dataset dependent,,,,Approx. O(Nk) per query,Fast at inference; lower overhead than pairwise quantum kernels
+Hybrid orchestration,dataset dependent,,,,Classical + selective quantum path,Trades compute cost for robustness under high sparsity

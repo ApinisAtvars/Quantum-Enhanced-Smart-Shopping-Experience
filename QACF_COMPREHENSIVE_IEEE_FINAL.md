@@ -27,7 +27,7 @@ Algoma University — Mitacs GRA Intern | April 2026
 
 ## Abstract
 
-We present **QACF (Quantum-Assisted Collaborative Filtering)**, a five-phase hybrid quantum-classical pipeline for recommendation systems under extreme data sparsity. Across four datasets (MovieLens 32M, Amazon Books/Appliances, Amazon Fashion) and seven history-dropout stress levels (0–95%), we validate QACF against classical baselines using rigorous multi-seed statistical validation.
+We present **QACF (Quantum-Assisted Collaborative Filtering)**, a five-phase hybrid quantum-classical pipeline for recommendation under extreme sparsity. Across four datasets (MovieLens 32M, Amazon Books/Appliances, Amazon Fashion) and seven history-dropout levels (0–95%), we compare QACF against classical baselines with multi-seed statistical validation.
 
 **Key Results**:
 
@@ -71,6 +71,8 @@ When a user has only 1–2 items in their history (simulating extreme cold-start
 
 ### B. Research Objective
 
+**Concise Objective Statement**: We test whether hybrid quantum-classical routing preserves recommendation quality under severe sparsity better than classical methods, and we identify the data regimes where this approach helps or fails.
+
 **Primary Hypothesis (Tested, Weeks 3–4)**:  
 "Quantum k-means–based clustering can reduce sparsity effects and improve recommendation accuracy compared to classical clustering methods."
 
@@ -97,6 +99,8 @@ Evaluate generalization across datasets (Amazon Books, Appliances, Fashion) to c
 - **Section VII**: Results across all datasets
 - **Section VIII**: Failure modes and limitations
 - **Section IX**: Conclusions and regime characterization
+
+Section II now summarizes the literature gap, after which Sections III–VII move from method design to empirical validation.
 
 ---
 
@@ -153,14 +157,14 @@ $$E(\mathbf{s}) = -\sum_i \text{Var}(f_i) \cdot s_i + \lambda \sum_{i<j} \text{C
 #### B.1 Amplitude Encoding
 - **Definition**: Normalize feature vector into qubit amplitudes
 - **Advantage**: Exponential compression  
-- **Disadvantage**: 64 amplitudes for 12D causes truncation/noise
+- **Disadvantage**: Mapping to amplitudes introduces truncation/noise in this setting
 - **Result**: Silhouette 0.035 (weak)
 
 #### B.2 Angle Encoding (Primary Used)
 - **Definition**: RY(x_i) for each qubit independently
 - **Advantage**: Minimal depth; robust to noise
 - **Disadvantage**: Only n qubits = n features (5 qubits → 5D max)
-- **Result**: Silhouette 0.055 (better than amplitude due to cleaner signal)
+- **Result**: Silhouette 0.055 (better than amplitude in this setup)
 
 #### B.3 IQP with Entanglement (Weeks 3–4 Success)
 - **Definition**: Alternating RZ + CZ ring topology
@@ -188,7 +192,9 @@ Optimize $\alpha$ to maximize downstream silhouette via gradient descent.
 **Result**:
 - Learned $\alpha \approx 0.7$ (amplitude-dominant)
 - Silhouette improved **3.6×** (0.035 → 0.127)
-- Shows that kernel **combination learning effective** even when individuals weak
+- Shows that kernel **combination learning can be effective** even when individual kernels are weak
+
+With these quantum components defined, Section IV describes how they are integrated into the full five-phase recommendation pipeline.
 
 ---
 
@@ -259,6 +265,8 @@ $$\text{score}(u, i) = \begin{cases}
 
 ## VI. Experimental Setup
 
+After the cross-dataset overview, this section defines the exact evaluation protocol used to compare classical and hybrid methods fairly.
+
 ### A. Datasets
 
 | Dataset | Type | Users | Items | Ratings | Density | Sp Levels | Eval Users |
@@ -277,7 +285,17 @@ $$\text{score}(u, i) = \begin{cases}
 | **Silhouette** | Intra-cluster cohesion - inter-cluster separation | Unsupervised cluster quality |
 | **Davies-Bouldin Index** | Average cluster separation ratio | Cluster separability |
 
-### C. Statistical Protocol
+### C. Compact Experimental Configuration (Reader Quick-Scan)
+
+| Dataset | Eval Users | Routing Groups | QUBO Clusters | Qubits | Primary Encoding |
+|---|---:|---:|---:|---|---|
+| MovieLens-UBCF | 300 | — | — | 6 | Angle + IQP |
+| Amazon-Books | 300 | 4 | 4 | 5–6 | Amplitude/Angle fusion + IQP |
+| Amazon-Appliances | 300 | 2 | 2 | 5–6 | Amplitude/Angle fusion + IQP |
+
+**Generated table artifact**: `QACF/analysis_outputs/experimental_improvements/experimental_configuration_table.csv`
+
+### D. Statistical Protocol
 
 - **Bootstrap CIs**: 1000–1200 resamples per metric per dropout level
 - **Paired Tests**: McNemar (binary outcomes) or paired t-test (continuous)
@@ -285,9 +303,25 @@ $$\text{score}(u, i) = \begin{cases}
 - **Multiple Comparisons**: Bonferroni (α' = 0.05/7 ≈ 0.007)
 - **Multi-Seed**: 5 seeds (MovieLens), 12–15 seeds (Amazon) for stability
 
+### E. Runtime and Practical Trade-Off Summary
+
+To make computational trade-offs explicit, we include a compact runtime/complexity summary artifact:
+
+- `QACF/analysis_outputs/experimental_improvements/runtime_comparison_summary.csv`
+
+Core takeaway: classical routing has lower compute overhead, while hybrid/quantum paths add computational cost but can improve robustness under severe sparsity in selected regimes.
+
+### F. Added Comparison Figures
+
+- Baseline comparison figure: `QACF/analysis_outputs/experimental_improvements/baseline_comparison_figure.png`
+- HR@10 vs sparsity figure: `QACF/analysis_outputs/experimental_improvements/sparsity_hr10_comparison.png`
+- Ablation summary figure: `QACF/analysis_outputs/experimental_improvements/ablation_summary_figure.png`
+
 ---
 
 ## VII. Results & Statistical Analysis
+
+Using the protocol above, we report MovieLens first as the primary validation case, followed by Books, Appliances, and Fashion.
 
 ### A. MovieLens 32M UBCF Track — Primary Success (Weeks 3–4)
 
@@ -318,7 +352,7 @@ $$\text{score}(u, i) = \begin{cases}
 | 90% | 0.036 | 0.041 | +13.9% | 0.0% | 80.0% | 20.0% |
 | 95% | 0.025 | 0.028 | +12.0% | 0.0% | 90.0% | 10.0% |
 
-**Pattern**: Hybrid advantage monotonically increases with sparsity, peaking at 80% dropout. Routing correctly schedules quantum path exactly where it's needed.
+**Pattern**: Hybrid advantage generally increases with sparsity and peaks at 80% dropout. Routing correctly schedules the quantum path where it is most useful.
 
 #### A.3 Quantum Clustering Quality
 
@@ -342,7 +376,7 @@ $$\text{score}(u, i) = \begin{cases}
 | 999 | 0.0524 | 0.0398 | 0.271 | +2.3% |
 | **Mean ± SD** | **0.0510 ± 0.0011** | **0.0389 ± 0.0008** | **0.265 ± 0.005** | Stable ✓ |
 
-**Verdict**: Standard deviation <2% across seeds, **much smaller than effect size** (20.5%), confirming results are robust and not due to random initialization luck.
+**Verdict**: Standard deviation <2% across seeds, **much smaller than the effect size** (20.5%), confirming results are robust and not due to random initialization.
 
 ---
 

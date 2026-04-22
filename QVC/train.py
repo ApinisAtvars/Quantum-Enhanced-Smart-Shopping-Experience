@@ -18,7 +18,7 @@ qd - qubit depth
 
 '''
 base_config = {
-                'seed': 2505,
+                'seed': 42,
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -43,7 +43,7 @@ base_config = {
                 'n_qubits': 4,
                 'q_depth': 2,                       # Number of variational layers
                 'q_delta': 0.01,                     # Initial spread of random quantum weights
-                'data_path': r"data\ncf_preprocessed\ratings_subset.csv"
+                'data_path': r"data\ncf_preprocessed\ratings_subset_500.csv"
                 }
 
 experiments = [
@@ -80,24 +80,24 @@ experiments = [
         'n_qubits': 4,
         'q_depth': 2,
         'q_delta': 0.1,
-        'alias': 'difseed2_res_se_high_delta',
-        'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state.'
+        'alias': '500_res_se_high_delta',
+        'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state. Trained on subset of 500 users'
     },
     {
         'circuit_type': 'data_reuploading',
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 2,
-        'alias': 'difseed2_res_data_reup',
-        'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity.'
+        'alias': '500_res_data_reup',
+        'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity. Trained on subset of 500 users'
     },
     {
         'circuit_type': 'mps',
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 4,
-        'alias': 'difseed2_res_mps_deep',
-        'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit.'
+        'alias': '500_res_mps_deep',
+        'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit. Trained on subset of 500 users'
     }
 ]
 

@@ -48,58 +48,58 @@ base_config = {
 
 
 experiments = [
-    # {
-    #     'circuit_type': 'strongly_entangling',
-    #     'use_residual': True,
-    #     'n_qubits': 4,
-    #     'q_depth': 2,
-    #     'q_delta': 0.01,
-    #     'alias': '500_res_difseed2_res_se_base',
-    #     'description': 'Baseline winner: Strongly entangling (nq=4, qd=2) with residual connection.'
-    # },
-    # {
-    #     'circuit_type': 'strongly_entangling',
-    #     'use_residual': True,
-    #     'n_qubits': 6,
-    #     'q_depth': 2,
-    #     'q_delta': 0.01,
-    #     'alias': '500_res_difseed2_res_se_wider',
-    #     'description': 'Wider circuit: Increased qubits to 6 for higher dimensional quantum latent space.'
-    # },
-    # {
-    #     'circuit_type': 'mps',
-    #     'use_residual': True,
-    #     'n_qubits': 4,
-    #     'q_depth': 4,
-    #     'q_delta': 0.01,
-    #     'alias': '500_res_difseed2_res_se_deeper',
-    #     'description': 'Deeper circuit: Increased depth to 4 for stronger entanglement.'
-    # },
     {
         'circuit_type': 'strongly_entangling',
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 2,
-        'q_delta': 0.1,
-        'alias': '500_res_difseed2_se_high_delta',
-        'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state. Trained on subset of 500 users'
+        'q_delta': 0.01,
+        'alias': '500_res_difseed2_res_se_base',
+        'description': 'Baseline winner: Strongly entangling (nq=4, qd=2) with residual connection.'
     },
     {
-        'circuit_type': 'data_reuploading',
+        'circuit_type': 'strongly_entangling',
         'use_residual': True,
-        'n_qubits': 4,
+        'n_qubits': 6,
         'q_depth': 2,
-        'alias': '500_res_difseed2_data_reup',
-        'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity. Trained on subset of 500 users'
+        'q_delta': 0.01,
+        'alias': '500_res_difseed2_res_se_wider',
+        'description': 'Wider circuit: Increased qubits to 6 for higher dimensional quantum latent space.'
     },
     {
         'circuit_type': 'mps',
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 4,
-        'alias': '500_res_difseed2_mps_deep',
-        'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit. Trained on subset of 500 users'
-    }
+        'q_delta': 0.01,
+        'alias': '500_res_difseed2_res_se_deeper',
+        'description': 'Deeper circuit: Increased depth to 4 for stronger entanglement.'
+    },
+    # {
+    #     'circuit_type': 'strongly_entangling',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 2,
+    #     'q_delta': 0.1,
+    #     'alias': '500_res_difseed2_se_high_delta',
+    #     'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state. Trained on subset of 500 users'
+    # },
+    # {
+    #     'circuit_type': 'data_reuploading',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 2,
+    #     'alias': '500_res_difseed2_data_reup',
+    #     'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity. Trained on subset of 500 users'
+    # },
+    # {
+    #     'circuit_type': 'mps',
+    #     'use_residual': True,
+    #     'n_qubits': 4,
+    #     'q_depth': 4,
+    #     'alias': '500_res_difseed2_mps_deep',
+    #     'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit. Trained on subset of 500 users'
+    # }
 ]
 
 # Load Data

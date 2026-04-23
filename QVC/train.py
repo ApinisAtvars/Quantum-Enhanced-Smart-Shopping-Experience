@@ -18,7 +18,7 @@ qd - qubit depth
 
 '''
 base_config = {
-                'seed': 42,
+                'seed': 2505,
                 'num_epoch': 10,                    # original 100
                 'batch_size': 256,                    # original 256
                 'optimizer': 'adam',                # original 'adam'
@@ -80,7 +80,7 @@ experiments = [
         'n_qubits': 4,
         'q_depth': 2,
         'q_delta': 0.1,
-        'alias': '500_res_se_high_delta',
+        'alias': '500_res_difseed2_se_high_delta',
         'description': 'Higher initialization spread: q_delta=0.1 to start with a less uniform state. Trained on subset of 500 users'
     },
     {
@@ -88,7 +88,7 @@ experiments = [
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 2,
-        'alias': '500_res_data_reup',
+        'alias': '500_res_difseed2_data_reup',
         'description': 'Data re-uploading circuit WITH residual connection to test its native expressivity. Trained on subset of 500 users'
     },
     {
@@ -96,7 +96,7 @@ experiments = [
         'use_residual': True,
         'n_qubits': 4,
         'q_depth': 4,
-        'alias': '500_res_mps_deep',
+        'alias': '500_res_difseed2_mps_deep',
         'description': 'Tree Tensor Network (MPS) WITH residual connection and deeper circuit. Trained on subset of 500 users'
     }
 ]

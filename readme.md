@@ -36,6 +36,9 @@ Contains the Quantum-Enhanced NeuMF models, incorporating variational quantum ci
 * `visualize_quantum_circuit.ipynb`: A Jupyter Notebook dedicated to visualizing the structure, topology, and parameters of the synthesized quantum circuits.
 * `data.py`, `metrics.py`, `utils.py`: Specialized dataset loaders, metrics, and helper functions specific to the QVC pipeline.
 
+### 3. Data Preprocessing : `data_preprocessing/`
+Contains the code to create the 1000-user and 500-user subsets.
+
 ### Artifacts and Output Directories
 * `data/` (excluded): Intended directory for datasets and generated subsets (e.g., `test.csv`, `test_subset.csv`).
 * `checkpoints/` (excluded) & `worthwhile_checkpoints/`: Directories storing `.model` weight binaries saved across training epochs for both classical NeuMF and QVC models. 

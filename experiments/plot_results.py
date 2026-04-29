@@ -1,18 +1,41 @@
 """
-Generate all plots from results/*.csv into plots/*.png.
+Generate all plots from the final CSVs.
+
+Reads:    results_final/*.csv
+Writes:   plots_final/*.png
+
+Required figures (see protocol_final.md Section 15):
+  - convergence_primary.png
+  - convergence_wallclock.png
+  - convergence_by_rank.png
+  - correctness_small.png
+  - benchmark_error_bar.png
+  - benchmark_runtime_bar.png
+  - runtime_breakdown_stacked.png
+  - scalability_runtime_vs_size.png
+  - scalability_error_vs_rank.png
+  - feasibility_exactsolver.png
 """
 import os
 import sys
 import numpy as np
 import pandas as pd
+import yaml
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-RESULTS_DIR = 'results'
-PLOTS_DIR = 'plots'
+
+def _load_cfg():
+    with open('config/experiment.yaml') as f:
+        return yaml.safe_load(f)
+
+
+CFG = _load_cfg()
+RESULTS_DIR = CFG['general']['output_dir']
+PLOTS_DIR = CFG['general']['plots_dir']
 os.makedirs(PLOTS_DIR, exist_ok=True)
 
 METHOD_COLORS = {
@@ -20,11 +43,8 @@ METHOD_COLORS = {
     'Repo_SGD': '#ff7f0e',
     'NBMF_SA': '#2ca02c',
     'NBMF_PathIntegral': '#e377c2',
-    'NBMF_Tabu': '#d62728',
-    'NBMF_SteepestDescent': '#9467bd',
     'NBMF_Exact': '#8c564b',
     'NMF_MU': '#7f7f7f',
-    'NMF_SGD': '#bcbd22',
 }
 
 METHOD_LABELS = {
@@ -32,11 +52,8 @@ METHOD_LABELS = {
     'Repo_SGD': 'SGD (dense)',
     'NBMF_SA': 'NBMF + Sim. Annealing',
     'NBMF_PathIntegral': 'NBMF + Path Integral',
-    'NBMF_Tabu': 'NBMF + Tabu',
-    'NBMF_SteepestDescent': 'NBMF + Steepest Desc.',
     'NBMF_Exact': 'NBMF + Exact',
     'NMF_MU': 'NMF (Mult. Updates)',
-    'NMF_SGD': 'NMF (Proj. SGD)',
 }
 
 SAMPLER_LABELS = {
@@ -49,12 +66,12 @@ SAMPLER_LABELS = {
 def _label(m):
     return METHOD_LABELS.get(m, m)
 
+
 def _color(m):
     return METHOD_COLORS.get(m, '#333333')
 
 
 def plot_convergence_primary(conv_df):
-    """Error vs iteration for primary methods on MovieLens benchmark."""
     primary = conv_df[conv_df['tier'] == 'primary'] if 'tier' in conv_df.columns else conv_df
     fig, ax = plt.subplots(figsize=(10, 6))
     for method in sorted(primary['method'].unique()):
@@ -79,13 +96,11 @@ def plot_convergence_primary(conv_df):
     print("  -> convergence_primary.png")
 
 
-def plot_convergence_small(corr_df):
-    """Final error bar chart for correctness experiment (small synthetic)."""
+def plot_correctness_small(corr_df):
     ranks = sorted(corr_df['rank'].unique())
     fig, axes = plt.subplots(1, len(ranks), figsize=(6 * len(ranks), 5))
     if len(ranks) == 1:
         axes = [axes]
-
     for ax, rank in zip(axes, ranks):
         sub = corr_df[corr_df['rank'] == rank]
         methods = sorted(sub['method'].unique())
@@ -99,8 +114,7 @@ def plot_convergence_small(corr_df):
         ax.set_title(f'Rank = {rank}', fontsize=12)
         ax.set_ylabel('Final Reconstruction Error', fontsize=11)
         ax.grid(True, alpha=0.3, axis='y')
-
-    fig.suptitle('Correctness: Small Synthetic (Exact vs SA)', fontsize=14)
+    fig.suptitle('Correctness: Small Synthetic (Exact vs SA vs PathIntegral)', fontsize=14)
     fig.tight_layout()
     fig.savefig(os.path.join(PLOTS_DIR, 'correctness_small.png'), dpi=150)
     plt.close(fig)
@@ -108,43 +122,46 @@ def plot_convergence_small(corr_df):
 
 
 def plot_benchmark_bars(primary_df):
-    """Side-by-side bars for final error and runtime across primary methods."""
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    grouped = primary_df.groupby('method')
+    """Two separate figures: error bar and runtime bar."""
     methods = sorted(primary_df['method'].unique())
     x = np.arange(len(methods))
     colors = [_color(m) for m in methods]
+    grouped = primary_df.groupby('method')
 
+    # Error
     err_mean = [grouped.get_group(m)['final_relative_error'].mean() for m in methods]
     err_std = [grouped.get_group(m)['final_relative_error'].std() for m in methods]
-    axes[0].bar(x, err_mean, yerr=err_std, color=colors, capsize=5,
-                edgecolor='black', linewidth=0.5)
-    axes[0].set_xticks(x)
-    axes[0].set_xticklabels([_label(m) for m in methods], rotation=20, ha='right', fontsize=10)
-    axes[0].set_ylabel('Relative Error (Frobenius)', fontsize=12)
-    axes[0].set_title('Final Relative Error', fontsize=13)
-    axes[0].grid(True, alpha=0.3, axis='y')
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.bar(x, err_mean, yerr=err_std, color=colors, capsize=5,
+           edgecolor='black', linewidth=0.5)
+    ax.set_xticks(x)
+    ax.set_xticklabels([_label(m) for m in methods], rotation=20, ha='right', fontsize=10)
+    ax.set_ylabel('Final Relative Error (Frobenius)', fontsize=12)
+    ax.set_title('Primary Benchmark — Final Relative Error', fontsize=13)
+    ax.grid(True, alpha=0.3, axis='y')
+    fig.tight_layout()
+    fig.savefig(os.path.join(PLOTS_DIR, 'benchmark_error_bar.png'), dpi=150)
+    plt.close(fig)
+    print("  -> benchmark_error_bar.png")
 
+    # Runtime
     rt_mean = [grouped.get_group(m)['total_runtime'].mean() for m in methods]
     rt_std = [grouped.get_group(m)['total_runtime'].std() for m in methods]
-    axes[1].bar(x, rt_mean, yerr=rt_std, color=colors, capsize=5,
-                edgecolor='black', linewidth=0.5)
-    axes[1].set_xticks(x)
-    axes[1].set_xticklabels([_label(m) for m in methods], rotation=20, ha='right', fontsize=10)
-    axes[1].set_ylabel('Total Runtime (s)', fontsize=12)
-    axes[1].set_title('Total Runtime', fontsize=13)
-    axes[1].grid(True, alpha=0.3, axis='y')
-
-    fig.suptitle('Primary Benchmark on MovieLens Subblock', fontsize=14)
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.bar(x, rt_mean, yerr=rt_std, color=colors, capsize=5,
+           edgecolor='black', linewidth=0.5)
+    ax.set_xticks(x)
+    ax.set_xticklabels([_label(m) for m in methods], rotation=20, ha='right', fontsize=10)
+    ax.set_ylabel('Total Runtime (s)', fontsize=12)
+    ax.set_title('Primary Benchmark — Total Runtime', fontsize=13)
+    ax.grid(True, alpha=0.3, axis='y')
     fig.tight_layout()
-    fig.savefig(os.path.join(PLOTS_DIR, 'benchmark_bars.png'), dpi=150)
+    fig.savefig(os.path.join(PLOTS_DIR, 'benchmark_runtime_bar.png'), dpi=150)
     plt.close(fig)
-    print("  -> benchmark_bars.png")
+    print("  -> benchmark_runtime_bar.png")
 
 
 def plot_runtime_breakdown(breakdown_df):
-    """Stacked bar chart of runtime components for NBMF variants."""
     methods = sorted(breakdown_df['method'].unique())
     means = breakdown_df.groupby('method').agg({
         'nnls_time': 'mean',
@@ -152,7 +169,6 @@ def plot_runtime_breakdown(breakdown_df):
         'annealing_time': 'mean',
         'postprocess_time': 'mean',
     }).reindex(methods)
-
     fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(methods))
     w = 0.5
@@ -167,7 +183,6 @@ def plot_runtime_breakdown(breakdown_df):
         vals = means[col].fillna(0).values
         ax.bar(x, vals, w, bottom=bottom, label=label, color=color)
         bottom += vals
-
     ax.set_xticks(x)
     ax.set_xticklabels([_label(m) for m in methods], rotation=15, ha='right')
     ax.set_ylabel('Time (s)', fontsize=12)
@@ -181,78 +196,82 @@ def plot_runtime_breakdown(breakdown_df):
 
 
 def plot_scalability(scale_df):
-    """Runtime and error vs matrix size and rank."""
     non_feas = scale_df[scale_df['data_source'] != 'feasibility']
     if non_feas.empty:
         print("  -> scalability plots SKIPPED (no data)")
         return
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
+    # Runtime vs size
+    fig, ax = plt.subplots(figsize=(9, 6))
     for source_label, sub_df in non_feas.groupby('data_source'):
-        for sampler in sub_df['sampler'].unique():
+        for sampler in sorted(sub_df['sampler'].unique()):
             ssub = sub_df[sub_df['sampler'] == sampler]
             for k in sorted(ssub['rank'].unique()):
                 ksub = ssub[ssub['rank'] == k]
                 grouped = ksub.groupby('n')['total_runtime'].agg(['mean', 'std']).reset_index()
                 label = f'{source_label} {SAMPLER_LABELS.get(sampler, sampler)} k={k}'
-                axes[0].errorbar(grouped['n'], grouped['mean'], yerr=grouped['std'],
-                                 marker='o', linewidth=1.5, capsize=3, label=label)
+                ax.errorbar(grouped['n'], grouped['mean'], yerr=grouped['std'],
+                            marker='o', linewidth=1.5, capsize=3, label=label)
+    ax.set_xlabel('Matrix Size (n = m)', fontsize=12)
+    ax.set_ylabel('Total Runtime (s)', fontsize=12)
+    ax.set_title('Scalability — Runtime vs Matrix Size', fontsize=13)
+    ax.set_yscale('log')
+    ax.legend(fontsize=7, ncol=2)
+    ax.grid(True, alpha=0.3, which='both')
+    fig.tight_layout()
+    fig.savefig(os.path.join(PLOTS_DIR, 'scalability_runtime_vs_size.png'), dpi=150)
+    plt.close(fig)
+    print("  -> scalability_runtime_vs_size.png")
 
-    axes[0].set_xlabel('Matrix Size (n)', fontsize=12)
-    axes[0].set_ylabel('Total Runtime (s)', fontsize=12)
-    axes[0].set_title('Runtime vs Matrix Size', fontsize=13)
-    axes[0].legend(fontsize=7, ncol=2)
-    axes[0].grid(True, alpha=0.3)
-
+    # Error vs rank
+    fig, ax = plt.subplots(figsize=(9, 6))
     for source_label, sub_df in non_feas.groupby('data_source'):
-        for sampler in sub_df['sampler'].unique():
+        for sampler in sorted(sub_df['sampler'].unique()):
             ssub = sub_df[sub_df['sampler'] == sampler]
             for sz in sorted(ssub['matrix_size'].unique(), key=lambda s: int(s.split('x')[0])):
                 szsub = ssub[ssub['matrix_size'] == sz]
                 grouped = szsub.groupby('rank')['final_relative_error'].agg(['mean', 'std']).reset_index()
-                label = f'{source_label} {sz}'
-                axes[1].errorbar(grouped['rank'], grouped['mean'], yerr=grouped['std'],
-                                 marker='s', linewidth=1.5, capsize=3, label=label)
-
-    axes[1].set_xlabel('Rank (k)', fontsize=12)
-    axes[1].set_ylabel('Final Relative Error', fontsize=12)
-    axes[1].set_title('Error vs Rank', fontsize=13)
-    axes[1].legend(fontsize=7, ncol=2)
-    axes[1].grid(True, alpha=0.3)
-
+                label = f'{source_label} {SAMPLER_LABELS.get(sampler, sampler)} {sz}'
+                ax.errorbar(grouped['rank'], grouped['mean'], yerr=grouped['std'],
+                            marker='s', linewidth=1.5, capsize=3, label=label)
+    ax.set_xlabel('Rank (k)', fontsize=12)
+    ax.set_ylabel('Final Relative Error', fontsize=12)
+    ax.set_title('Scalability — Error vs Rank', fontsize=13)
+    ax.legend(fontsize=7, ncol=2)
+    ax.grid(True, alpha=0.3)
     fig.tight_layout()
-    fig.savefig(os.path.join(PLOTS_DIR, 'scalability.png'), dpi=150)
+    fig.savefig(os.path.join(PLOTS_DIR, 'scalability_error_vs_rank.png'), dpi=150)
     plt.close(fig)
-    print("  -> scalability.png")
+    print("  -> scalability_error_vs_rank.png")
 
-    # Feasibility
+
+def plot_feasibility(scale_df):
     feas = scale_df[scale_df['data_source'] == 'feasibility']
-    if not feas.empty:
-        fig, ax = plt.subplots(figsize=(8, 5))
-        for sz in sorted(feas['matrix_size'].unique(), key=lambda s: int(s.split('x')[0])):
-            sub = feas[feas['matrix_size'] == sz].sort_values('rank')
-            ax.plot(sub['rank'], sub['total_runtime'], marker='D', linewidth=2, label=sz)
-        ax.set_xlabel('Rank (k)', fontsize=12)
-        ax.set_ylabel('Total Runtime (s)', fontsize=12)
-        ax.set_title('ExactSolver Feasibility: Runtime vs Rank', fontsize=13)
-        ax.set_yscale('log')
-        ax.legend(fontsize=10)
-        ax.grid(True, alpha=0.3)
-        fig.tight_layout()
-        fig.savefig(os.path.join(PLOTS_DIR, 'feasibility_exact.png'), dpi=150)
-        plt.close(fig)
-        print("  -> feasibility_exact.png")
+    if feas.empty:
+        print("  -> feasibility_exactsolver.png SKIPPED (no data)")
+        return
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for sz in sorted(feas['matrix_size'].unique(), key=lambda s: int(s.split('x')[0])):
+        sub = feas[feas['matrix_size'] == sz].sort_values('rank')
+        ax.plot(sub['rank'], sub['total_runtime'], marker='D', linewidth=2, label=sz)
+    ax.set_xlabel('Rank (k)', fontsize=12)
+    ax.set_ylabel('Total Runtime (s)', fontsize=12)
+    ax.set_title('ExactSolver Feasibility — Runtime vs Rank', fontsize=13)
+    ax.set_yscale('log')
+    ax.legend(fontsize=10, title='matrix size')
+    ax.grid(True, alpha=0.3, which='both')
+    fig.tight_layout()
+    fig.savefig(os.path.join(PLOTS_DIR, 'feasibility_exactsolver.png'), dpi=150)
+    plt.close(fig)
+    print("  -> feasibility_exactsolver.png")
 
 
 def plot_convergence_by_rank(conv_detail_df):
-    """Convergence curves per rank on synthetic data."""
     ranks = sorted(conv_detail_df['rank'].unique())
     n_ranks = len(ranks)
     fig, axes = plt.subplots(1, n_ranks, figsize=(6 * n_ranks, 5), sharey=False)
     if n_ranks == 1:
         axes = [axes]
-
     for ax, rank in zip(axes, ranks):
         sub = conv_detail_df[conv_detail_df['rank'] == rank]
         for method in sorted(sub['method'].unique()):
@@ -272,8 +291,7 @@ def plot_convergence_by_rank(conv_detail_df):
         if ax == axes[0]:
             ax.set_ylabel('Reconstruction Error', fontsize=11)
         ax.legend(fontsize=7)
-
-    fig.suptitle('Convergence by Rank (Synthetic)', fontsize=14, y=1.02)
+    fig.suptitle('Convergence by Rank (Synthetic 30x30)', fontsize=14, y=1.02)
     fig.tight_layout()
     fig.savefig(os.path.join(PLOTS_DIR, 'convergence_by_rank.png'), dpi=150, bbox_inches='tight')
     plt.close(fig)
@@ -281,17 +299,14 @@ def plot_convergence_by_rank(conv_detail_df):
 
 
 def plot_convergence_wallclock(conv_detail_df):
-    """Error vs cumulative wall-clock time."""
     if 'cumulative_time' not in conv_detail_df.columns:
         print("  -> convergence_wallclock.png SKIPPED (no cumulative_time)")
         return
-
     ranks = sorted(conv_detail_df['rank'].unique())
     n_ranks = len(ranks)
     fig, axes = plt.subplots(1, n_ranks, figsize=(6 * n_ranks, 5), sharey=False)
     if n_ranks == 1:
         axes = [axes]
-
     for ax, rank in zip(axes, ranks):
         sub = conv_detail_df[conv_detail_df['rank'] == rank]
         for method in sorted(sub['method'].unique()):
@@ -308,8 +323,7 @@ def plot_convergence_wallclock(conv_detail_df):
         if ax == axes[0]:
             ax.set_ylabel('Reconstruction Error', fontsize=11)
         ax.legend(fontsize=7)
-
-    fig.suptitle('Error vs Wall-Clock Time (Synthetic)', fontsize=14, y=1.02)
+    fig.suptitle('Error vs Wall-Clock Time (Synthetic 30x30)', fontsize=14, y=1.02)
     fig.tight_layout()
     fig.savefig(os.path.join(PLOTS_DIR, 'convergence_wallclock.png'), dpi=150, bbox_inches='tight')
     plt.close(fig)
@@ -317,36 +331,35 @@ def plot_convergence_wallclock(conv_detail_df):
 
 
 def main():
-    print("Generating plots from results/*.csv ...")
+    print(f"Generating plots from {RESULTS_DIR}/*.csv into {PLOTS_DIR}/ ...")
 
-    conv_path = os.path.join(RESULTS_DIR, 'convergence_results.csv')
-    conv_detail_path = os.path.join(RESULTS_DIR, 'convergence_detailed.csv')
-    primary_path = os.path.join(RESULTS_DIR, 'benchmark_primary_results.csv')
-    corr_path = os.path.join(RESULTS_DIR, 'correctness_results.csv')
-    breakdown_path = os.path.join(RESULTS_DIR, 'runtime_breakdown_results.csv')
-    scale_path = os.path.join(RESULTS_DIR, 'scalability_results.csv')
+    paths = {
+        'conv': os.path.join(RESULTS_DIR, 'convergence_results.csv'),
+        'conv_detail': os.path.join(RESULTS_DIR, 'convergence_detailed.csv'),
+        'primary': os.path.join(RESULTS_DIR, 'benchmark_primary_results.csv'),
+        'correctness': os.path.join(RESULTS_DIR, 'correctness_results.csv'),
+        'breakdown': os.path.join(RESULTS_DIR, 'runtime_breakdown_results.csv'),
+        'scale': os.path.join(RESULTS_DIR, 'scalability_results.csv'),
+    }
 
-    if os.path.exists(conv_path):
-        plot_convergence_primary(pd.read_csv(conv_path))
+    if os.path.exists(paths['conv']):
+        plot_convergence_primary(pd.read_csv(paths['conv']))
+    if os.path.exists(paths['correctness']):
+        plot_correctness_small(pd.read_csv(paths['correctness']))
+    if os.path.exists(paths['primary']):
+        plot_benchmark_bars(pd.read_csv(paths['primary']))
+    if os.path.exists(paths['breakdown']):
+        plot_runtime_breakdown(pd.read_csv(paths['breakdown']))
+    if os.path.exists(paths['scale']):
+        sdf = pd.read_csv(paths['scale'])
+        plot_scalability(sdf)
+        plot_feasibility(sdf)
+    if os.path.exists(paths['conv_detail']):
+        cdf = pd.read_csv(paths['conv_detail'])
+        plot_convergence_by_rank(cdf)
+        plot_convergence_wallclock(cdf)
 
-    if os.path.exists(corr_path):
-        plot_convergence_small(pd.read_csv(corr_path))
-
-    if os.path.exists(primary_path):
-        plot_benchmark_bars(pd.read_csv(primary_path))
-
-    if os.path.exists(breakdown_path):
-        plot_runtime_breakdown(pd.read_csv(breakdown_path))
-
-    if os.path.exists(scale_path):
-        plot_scalability(pd.read_csv(scale_path))
-
-    if os.path.exists(conv_detail_path):
-        conv_detail_df = pd.read_csv(conv_detail_path)
-        plot_convergence_by_rank(conv_detail_df)
-        plot_convergence_wallclock(conv_detail_df)
-
-    print("\nAll plots saved to plots/")
+    print(f"\nAll plots saved to {PLOTS_DIR}/")
 
 
 if __name__ == "__main__":

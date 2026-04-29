@@ -1,0 +1,15 @@
+requirement_id,requirement,status,tier,evidence_file,evidence_detail
+17.1,"Primary benchmark has exactly {Repo_ALS, Repo_SGD, NBMF_SA, NBMF_PathIntegral}",PASS,primary,results_final/benchmark_primary_results.csv,"primary method set exactly matches ['NBMF_PathIntegral', 'NBMF_SA', 'Repo_ALS', 'Repo_SGD']"
+17.2,"Primary benchmark uses exactly 5 seeds [42, 43, 44, 45, 46]",PASS,primary,results_final/benchmark_primary_results.csv,"primary seed set exactly matches [42, 43, 44, 45, 46]"
+17.3,Primary benchmark uses a single matrix size (actual extracted subblock),PASS,primary,results_final/benchmark_primary_results.csv,matrix_size=100x100
+17.4,Primary benchmark rank is 5 for every row,PASS,primary,results_final/benchmark_primary_results.csv,ranks=[np.int64(5)]
+17.5,Primary benchmark has no forbidden methods,PASS,primary,results_final/benchmark_primary_results.csv,"forbidden set absent: ['NBMF_Exact', 'NBMF_SteepestDescent', 'NBMF_Tabu', 'NMF_MU', 'NMF_SGD']"
+17.6,"Correctness has required methods, 5 seeds, sizes {10x10}, ranks {2,5}",PASS,correctness,results_final/correctness_results.csv,"correctness method set exactly matches ['NBMF_Exact', 'NBMF_PathIntegral', 'NBMF_SA']; correctness seed set exactly matches [42, 43, 44, 45, 46]; correctness rank set exactly matches [2, 5]; correctness size set exactly matches ['10x10']"
+17.7,"Convergence detailed has required methods, 5 seeds, size 30x30, ranks {2,5,10}",PASS,convergence,results_final/convergence_detailed.csv,"convergence method set exactly matches ['NBMF_Exact', 'NBMF_PathIntegral', 'NBMF_SA', 'Repo_ALS', 'Repo_SGD']; convergence rank set exactly matches [2, 5, 10]; convergence seed set exactly matches [42, 43, 44, 45, 46]; convergence size set exactly matches ['30x30']"
+17.8,Runtime breakdown covers both NBMF primary methods with all columns,PASS,runtime,results_final/runtime_breakdown_results.csv,"methods=['NBMF_PathIntegral', 'NBMF_SA'], rows=10"
+17.9a,Scalability synthetic grid matches protocol,PASS,scalability,results_final/scalability_results.csv,"synthetic sizes exactly matches ['100x100', '10x10', '20x20', '50x50']; synthetic samplers exactly matches ['path_integral', 'simulated_annealing']; synthetic ranks present=[np.int64(2), np.int64(5), np.int64(10)]; synthetic seeds exactly matches [42, 43, 44]"
+17.9b,Scalability MovieLens grid matches protocol,PASS,scalability,results_final/scalability_results.csv,"movielens samplers exactly matches ['path_integral', 'simulated_annealing']; movielens ranks exactly matches [2, 5]; movielens seeds exactly matches [42, 43, 44]"
+17.10,Feasibility subset matches protocol,PASS,feasibility,results_final/scalability_results.csv,"feasibility sizes exactly matches ['10x10', '12x12', '15x15', '8x8']; feasibility ranks present=[np.int64(2), np.int64(5), np.int64(10)]; feasibility seed exactly matches [42]"
+17.11,Primary summary has mean/std/count/CI,PASS,summary,results_final/benchmark_primary_summary.csv,rows=8
+17.12,All required PNGs exist,PASS,plots,plots_final,all 10 PNGs present
+17.13,TIMEOUT constant matches config and protocol (600s),PASS,code,experiments/scalability.py,"code=600, cfg=600"

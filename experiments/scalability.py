@@ -3,7 +3,7 @@ Scalability study: runtime and error across varying matrix sizes and ranks.
 
 Also tests ExactSolver feasibility boundary on small problems.
 
-Produces results/scalability_results.csv.
+Produces results_final/scalability_results.csv.
 """
 import os
 import sys
@@ -21,6 +21,7 @@ from models.nbmf import NBMF
 
 logger = get_logger("Scalability")
 
+# Per-run hard timeout, mirrors protocol_final.md Section 12/13.
 TIMEOUT = 600
 
 
@@ -70,6 +71,10 @@ def main():
     os.makedirs(cfg['general']['output_dir'], exist_ok=True)
     seeds = cfg['scalability']['scalability_seeds']
     num_iterations = cfg['general']['num_iterations']
+    timeout_s = cfg['scalability'].get('timeout_seconds', TIMEOUT)
+    assert timeout_s == TIMEOUT, (
+        f"Protocol mismatch: config timeout_seconds={timeout_s} but code TIMEOUT={TIMEOUT}"
+    )
 
     rows = []
 
@@ -121,19 +126,22 @@ def main():
 
     # --- ExactSolver feasibility boundary ---
     feas_cfg = cfg['scalability']['feasibility']
+    feas_seed = feas_cfg.get('exact_seed', seeds[0])
     for size in feas_cfg['exact_sizes']:
         n, m = size
         for k in feas_cfg['exact_ranks']:
             if k >= n:
                 continue
-            seed = seeds[0]
             logger.info(f"Feasibility: Exact {n}x{m} | k={k}")
-            V, _, _, _ = generate_synthetic(n, m, k, seed=seed)
+            V, _, _, _ = generate_synthetic(n, m, k, seed=feas_seed)
             t0 = time.perf_counter()
+            note = ''
             try:
-                res = run_single(V, k, 'exact', num_iterations, 0, 0, seed)
+                res = run_single(V, k, 'exact', num_iterations, 0, 0, feas_seed)
                 elapsed = time.perf_counter() - t0
                 feasible = elapsed < TIMEOUT
+                if not feasible:
+                    note = f'elapsed={elapsed:.1f}s exceeded TIMEOUT={TIMEOUT}s'
             except Exception as e:
                 logger.warning(f"ExactSolver failed: {e}")
                 res = {col: np.nan for col in [
@@ -143,13 +151,15 @@ def main():
                     'num_qubo_solves', 'avg_qubo_solve_time',
                 ]}
                 feasible = False
+                note = f'exception: {type(e).__name__}: {e}'
             rows.append({
                 'data_source': 'feasibility',
                 'matrix_size': f"{n}x{m}",
                 'n': n, 'm': m, 'rank': k,
                 'sampler': 'exact',
-                'seed': seed,
+                'seed': feas_seed,
                 'feasible': feasible,
+                'note': note,
                 **res,
             })
 

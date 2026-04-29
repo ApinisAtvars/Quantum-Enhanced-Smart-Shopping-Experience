@@ -4,7 +4,7 @@ Convergence analysis on synthetic problems with known ground truth.
 Tracks error vs iteration AND error vs cumulative wall-clock time for
 NBMF samplers and the adapted repo ALS/SGD baselines.
 
-Produces results/convergence_detailed.csv.
+Produces results_final/convergence_detailed.csv.
 """
 import os
 import sys

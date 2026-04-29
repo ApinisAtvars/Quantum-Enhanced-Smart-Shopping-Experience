@@ -4,7 +4,7 @@ Tier 1 — Correctness / sanity checks.
 Validates QUBO construction, ExactSolver ground-truth recovery, and sampler
 approximation quality on small synthetic problems with known W_true, H_true.
 
-Produces results/correctness_results.csv.
+Produces results_final/correctness_results.csv.
 """
 import os
 import sys

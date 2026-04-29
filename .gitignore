@@ -16,6 +16,14 @@ Thumbs.db
 *.swp
 *.swo
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
 # Data archives
 data/ml-100k/
 data/*.zip

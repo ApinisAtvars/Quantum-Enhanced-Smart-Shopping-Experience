@@ -4,10 +4,10 @@ Core benchmark: compare primary methods on a MovieLens dense subblock.
 Methods: Repo ALS, Repo SGD, NBMF+SA, NBMF+PathIntegral, NMF-MU (supplemental).
 
 Produces:
-  results/benchmark_primary_results.csv
-  results/benchmark_supplemental_results.csv
-  results/convergence_results.csv
-  results/runtime_breakdown_results.csv
+  results_final/benchmark_primary_results.csv
+  results_final/benchmark_supplemental_results.csv
+  results_final/convergence_results.csv
+  results_final/runtime_breakdown_results.csv
 """
 import os
 import sys

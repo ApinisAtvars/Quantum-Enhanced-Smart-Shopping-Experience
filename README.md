@@ -39,7 +39,7 @@ pip install -r requirements.txt
 python run_all.py
 ```
 
-Tested on Python 3.13 (macOS arm64). The full pipeline completes in ~3.5 minutes on a 2026 MacBook.
+Tested on Python 3.13 (macOS arm64). The full pipeline completes in ~3.5 minutes on a M2Pro MacBook.
 
 ## 3. Pipeline
 

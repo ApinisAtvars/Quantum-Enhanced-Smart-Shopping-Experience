@@ -1,3 +1,16 @@
+# Matrix Factorization to QUBO Workflow
+
+This project documents a practical progression from classical matrix factorization to QUBO-based optimization.
+
+I started by implementing and validating two classical baselines:
+- ALS (Alternating Least Squares)
+- SGD (Stochastic Gradient Descent)
+
+After establishing those baselines, I reformulated the factorization into a classical QUBO problem and used simulated annealing as the main solving strategy.
+
+The experiments in this repository focus on comparing behavior across these stages, including reconstruction quality, runtime behavior, and convergence trends.
+
+In short: classical MF first, QUBO conversion next, then simulated annealing experiments and analysis.
 # NBMF-QUBO — Final Evidence Package
 
 This repository contains the reproducible implementation and final evidence package for a comparison between classical matrix-factorization baselines (ALS, biased SGD, multiplicative-update NMF) and a QUBO-based binary-`H` factorization (NBMF) solved with classical annealing samplers (`SimulatedAnnealing`, `PathIntegralAnnealing`, `ExactSolver` oracle).
@@ -46,7 +59,7 @@ A successful run finishes with every row of `compliance_matrix.csv` showing `PAS
 
 ## 4. Outputs (the only sources of paper numbers and figures)
 
-### `results_final/` — binding CSVs (do not edit)
+### `results_final/` — binding CSVs
 
 - `correctness_results.csv`
 - `benchmark_primary_results.csv`, `benchmark_primary_summary.csv`, `benchmark_supplemental_results.csv`
@@ -55,7 +68,7 @@ A successful run finishes with every row of `compliance_matrix.csv` showing `PAS
 - `scalability_results.csv`
 - `compliance_matrix.csv`
 
-### `plots_final/` — binding figures (do not edit)
+### `plots_final/` — binding figures
 
 - `convergence_primary.png`, `convergence_by_rank.png`, `convergence_wallclock.png`
 - `correctness_small.png`
@@ -87,14 +100,3 @@ A successful run finishes with every row of `compliance_matrix.csv` showing `PAS
 - **NBMF:** binary-`H` factorization with per-column QUBO subproblems, solved by `SimulatedAnnealingSampler`, `PathIntegralAnnealingSampler`, and `dimod.ExactSolver` (oracle / feasibility probe only).
 - **Datasets:** MovieLens 100K dense top-N subblock (primary); noiseless synthetic `W_true ~ U(0,1)`, `H_true ~ Bernoulli(0.5)` (correctness, convergence, scalability, feasibility).
 - **Measurements:** reconstruction error, relative error, per-iteration traces, cumulative wall-clock, runtime decomposition (NNLS / QUBO build / sampler / postprocess).
-
-## 7. Not in scope (do not cite)
-
-- Quantum hardware behavior. All annealing is via `dwave-samplers` classical simulators.
-- Generalization to the full sparse MovieLens — only dense top-N subblocks are tested.
-- Asymptotic complexity claims — only empirical trends within the tested grid.
-- `NBMF_Tabu`, `NBMF_SteepestDescent`, `NMF_SGD` — not part of the final run (see `protocol_final.md` §4.2–§4.3).
-
-## 8. Archive
-
-`archive/finalization_backup_20260422T232612Z/` is preserved on disk for auditability and is excluded from version control via `.gitignore`. It contains the earlier reduced run, an even earlier "legacy" run, and the legacy training CLIs that were superseded by the orchestrated pipeline. Nothing in `archive/` is paper evidence; see `archive/.../archive_manifest.md` for an item-by-item listing.

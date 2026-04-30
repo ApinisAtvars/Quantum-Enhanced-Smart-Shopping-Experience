@@ -1,5 +1,5 @@
 """
-Shared Fixes Module for All Datasets (UBCF, Amazon, Beauty, Appliances)
+Shared Fixes Module for All Datasets (UBCF, Amazon, Fashion, Appliances)
 
 This module is imported by all notebooks across all datasets.
 It contains the corrected implementations for:
@@ -272,7 +272,7 @@ def compute_quick_metrics(predictions, ground_truth, topk=10):
 def load_dataset_pair(data_dir, dataset_type='ubcf'):
     """
     Load user_latent, user_sparse for any dataset.
-    Handles: ubcf, amazon, beauty, appliances
+    Handles: ubcf, amazon, Fashion, appliances
     """
     data_dir = Path(data_dir)
     

@@ -1,0 +1,4 @@
+dataset,best_silhouette,run_dir
+amazon,0.6662768638729591,C:\Users\acolumban\Desktop\Quantum-Enhanced-Smart-Shopping-Experience\QACF\AmazonReviews\FashionReviews\notebooks\data\processed_Fashion
+ubcf,0.0960036066205823,C:\Users\acolumban\Desktop\Quantum-Enhanced-Smart-Shopping-Experience\QACF\data\processed_32m_ubcf
+delta_amazon_minus_ubcf,0.5702732572523769,-

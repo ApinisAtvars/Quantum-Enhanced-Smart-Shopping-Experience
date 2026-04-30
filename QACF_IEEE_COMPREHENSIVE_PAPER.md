@@ -853,7 +853,7 @@ Random Seed:
    - Ground-truth test sets also sparse; inherent reduced statistical power
 
 3. **Content-Rich Domains**:
-   - Amazon Fashion/Beauty: Rich review text + category hierarchies make classical content-CF optimal
+   - Amazon Fashion/Fashion: Rich review text + category hierarchies make classical content-CF optimal
    - Quantum kernel geometry (silhouette 0.094) irrelevant when TF-IDF (silhouette 0.210) dominates
    - **Failure Mode #6**: Content features completely eclipse quantum advantage
 

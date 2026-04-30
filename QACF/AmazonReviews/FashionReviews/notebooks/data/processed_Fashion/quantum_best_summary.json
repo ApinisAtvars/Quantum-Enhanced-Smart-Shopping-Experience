@@ -1,0 +1,8 @@
+{
+  "best_method": "kernel_fusion_trainable",
+  "best_silhouette": 0.2569009649183506,
+  "target_achieved": true,
+  "amazon_vs_ubcf_delta": 0.16089735829776833,
+  "kernel_source": "trainable_fusion",
+  "timestamp": "2026-04-29 16:13:35.448407"
+}

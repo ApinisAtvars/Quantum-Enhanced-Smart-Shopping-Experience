@@ -1,0 +1,38 @@
+{
+  "seed": 42,
+  "sample_users": 800,
+  "n_qubits": 6,
+  "k_range": [
+    4,
+    10
+  ],
+  "kernel_alpha": 0.45,
+  "noisy_shots": 4096,
+  "noise_probability": 0.01,
+  "noisy_stability": {
+    "backend": "qiskit_aer",
+    "mae": 0.8256960248256086,
+    "corr": 0.024129947751133772,
+    "n": 80
+  },
+  "best": {
+    "kernel": "trainable_fusion+ensemble",
+    "mode": "kernel_fusion_trainable",
+    "k": 2,
+    "iters": -1,
+    "silhouette": 0.2569009649183506,
+    "davies_bouldin": null,
+    "inertia": null
+  },
+  "silhouette_overall": 0.2569009649183506,
+  "davies_bouldin": 7.3197279552744705,
+  "per_cluster_silhouette": {
+    "0": 0.21606053924877086,
+    "1": 0.3746641340820904
+  },
+  "entanglement_comparison": {
+    "best_plain_silhouette": 0.030107826447552992,
+    "best_entangled_silhouette": 0.030107826447552992,
+    "delta": 0.0
+  }
+}

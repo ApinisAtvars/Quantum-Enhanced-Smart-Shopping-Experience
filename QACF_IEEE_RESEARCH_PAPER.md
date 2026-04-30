@@ -8,7 +8,7 @@ April 2026
 
 ## Abstract
 
-User-item interaction matrices in collaborative filtering exhibit extreme sparsity: MovieLens 32M is extremely sparse, and Amazon domains (Books, Appliances, Fashion/Beauty) are similarly sparse at scale. **This paper documents seven named failure modes** of quantum-assisted clustering in collaborative filtering, providing mechanical explanations for quantum underperformance rather than performance claims. We evaluate a hybrid quantum-classical pipeline across three tracks (MovieLens UBCF, Amazon Books/Appliances retail, and Amazon Fashion/Beauty reviews) while controlling for dataset scale: quantum methods are applied uniformly to N=600 stratified samples; classical baselines are restricted to equivalent cohorts for fair comparison. Quantum clustering (silhouette 0.13) consistently underperforms classical k-means (0.22); ranking metrics (HR@10, NDCG@10) show no significant improvement after Bonferroni correction (α=0.05/7≈0.007). Only novelty/diversity achieves nominal significance (p=0.021 uncorrected, p>0.14 corrected), which we label "directional" rather than "confirmed." We identify systematic failure modes: (1) IQP entanglement saturation in sparse regimes, (2) amplitude encoding truncation loss, (3) insufficient qubit count vs. feature dimensionality, (4) Swap-test unreliability under NISQ noise, (5) clustering degradation at 95%+ sparsity, (6) classical content features dominate quantum kernels, (7) O(N²q²) scaling prohibits real deployments. The core contribution is rigorous mechanical failure analysis enabling future quantum-CF research to avoid these regimes. We provide reproducible end-to-end code, multi-seed bootstrap validation (1000+ iterations), and statistical corrections, establishing a replicable null-result benchmark for the field.
+User-item interaction matrices in collaborative filtering exhibit extreme sparsity: MovieLens 32M is extremely sparse, and Amazon domains (Books, Appliances, Fashion/Fashion) are similarly sparse at scale. **This paper documents seven named failure modes** of quantum-assisted clustering in collaborative filtering, providing mechanical explanations for quantum underperformance rather than performance claims. We evaluate a hybrid quantum-classical pipeline across three tracks (MovieLens UBCF, Amazon Books/Appliances retail, and Amazon Fashion/Fashion reviews) while controlling for dataset scale: quantum methods are applied uniformly to N=600 stratified samples; classical baselines are restricted to equivalent cohorts for fair comparison. Quantum clustering (silhouette 0.13) consistently underperforms classical k-means (0.22); ranking metrics (HR@10, NDCG@10) show no significant improvement after Bonferroni correction (α=0.05/7≈0.007). Only novelty/diversity achieves nominal significance (p=0.021 uncorrected, p>0.14 corrected), which we label "directional" rather than "confirmed." We identify systematic failure modes: (1) IQP entanglement saturation in sparse regimes, (2) amplitude encoding truncation loss, (3) insufficient qubit count vs. feature dimensionality, (4) Swap-test unreliability under NISQ noise, (5) clustering degradation at 95%+ sparsity, (6) classical content features dominate quantum kernels, (7) O(N²q²) scaling prohibits real deployments. The core contribution is rigorous mechanical failure analysis enabling future quantum-CF research to avoid these regimes. We provide reproducible end-to-end code, multi-seed bootstrap validation (1000+ iterations), and statistical corrections, establishing a replicable null-result benchmark for the field.
 
 **Index Terms:** Quantum machine learning, collaborative filtering, recommendation systems, sparsity mitigation, quantum clustering, hybrid algorithms, NISQ.
 
@@ -29,7 +29,7 @@ In MovieLens 32M (200k users, 84k items):
 In Amazon datasets:
 - Books: 100k+ users, 1.2M+ items, ~10M interactions → **0.000008% density**
 - Appliances: 50k+ users, 15k+ items, ~200k interactions → **0.089% density**
-- Fashion/Beauty: ultra-sparse, content-rich regime (review text + category hierarchy)
+- Fashion/Fashion: ultra-sparse, content-rich regime (review text + category hierarchy)
 
 **Classical Limitations:**  
 Standard collaborative filtering (user/item k-nearest neighbors) relies on Euclidean distances in latent embedding space:
@@ -68,7 +68,7 @@ Systematically document why quantum-assisted CF fails, providing mechanical fail
 7. O(N²q²) computational scaling prohibits deployment beyond N~500 users
 
 **Scope:**  
-- Datasets: MovieLens 32M (UBCF track), Amazon Books/Appliances (retail), and Amazon All-Beauty (fashion reviews)
+- Datasets: MovieLens 32M (UBCF track), Amazon Books/Appliances (retail), and Amazon All-Fashion (fashion reviews)
 - **Critical improvement:** All comparisons now use stratified N=600 samples for both quantum and classical methods (fixing prior asymmetric comparison: quantum N=600 vs classical N=200k)
 - Metrics: RMSE, MAE, HR@10, NDCG@10, Precision@10, novelty, coverage
 - Stress test: History dropout from 0% to 95% in 20% intervals  
@@ -458,7 +458,7 @@ Both datasets underwent distinct pipelines tailored to their characteristics:
    - Per-level: 300 users, paired classical vs hybrid comparison
    - Sparsity routing threshold: 10 ratings (tuned via early runs)
 
-#### 5.1.2 Amazon Non-Beauty Track (Books/Appliances)
+#### 5.1.2 Amazon Non-Fashion Track (Books/Appliances)
 
 **Data Characteristics:**
 - Implicit/explicit mixed dataset (CSV + metadata)
@@ -497,7 +497,7 @@ Both datasets underwent distinct pipelines tailored to their characteristics:
 
 **Table 5.0: MovieLens UBCF vs Amazon Pipeline Architecture**
 
-| Aspect | MovieLens UBCF | Amazon Non-Beauty | Rationale |
+| Aspect | MovieLens UBCF | Amazon Non-Fashion | Rationale |
 |--------|---|---|---|
 | **Primary CF Type** | User-based (UBCF) | Item-based (Item-CF) | UBCF suits explicit dense neighborhoods; Item-CF suits sparse catalog |
 | **Feature Dimensionality** | 32D latent only | 32D latent + 300D content | Amazon items need content hint due to catalog sparsity (1.2M items) |
@@ -662,7 +662,7 @@ This convergence suggests findings are **robust to dataset variations**, not art
 - Density: 0.0000190% (190 ratings per million possible)
 - Data split: Temporal 80/20 (train/test) on original data; further dropout for stress
 
-**Amazon Non-Beauty Track**
+**Amazon Non-Fashion Track**
 - Books variant:
   - Users: 100,000+
   - Items: 1.2 million+
@@ -826,7 +826,7 @@ Hybrid approach shows **regime-dependent benefit**: effective for moderate spars
 
 ---
 
-### 7.2 Amazon Non-Beauty Track Results
+### 7.2 Amazon Non-Fashion Track Results
 
 #### 7.2.1 Baseline (Classical Item-CF)
 
@@ -876,14 +876,14 @@ Amazon data is even sparser than MovieLens in practical terms (after Phase 1 fil
 
 ---
 
-### 7.3 Fashion Dataset Results (Amazon All-Beauty Reviews)
+### 7.3 Fashion Dataset Results (Amazon All-Fashion Reviews)
 
 **Dataset Characteristics:**
 - **Users:** 10.2M (sparse active subset: 65 users in test cohort)
-- **Items:** 4.5M beauty/cosmetic products
+- **Items:** 4.5M Fashion/cosmetic products
 - **Interactions:** 29.1M reviews
 - **Density:** 0.0000063% (extreme sparsity; 10× sparser than retail)
-- **Domain:** Fashion/beauty recommendations; high review text richness
+- **Domain:** Fashion/Fashion recommendations; high review text richness
 
 **Stress Test Results** (high sparsity regime: 80%–95% history dropout):
 
@@ -911,7 +911,7 @@ Amazon data is even sparser than MovieLens in practical terms (after Phase 1 fil
 | Effect size (Cohen's d_z) | 0.0 | No measurable effect |
 
 **Interpretation:**  
-Fashion/beauty dataset exhibits **more extreme failure pattern** than retail:
+Fashion/Fashion dataset exhibits **more extreme failure pattern** than retail:
 1. At 90% dropout, hybrid HR drops −50% (classical only drops slightly)
 2. At 95%+ dropout, both systems collapse to near-zero HR; differences vanish
 3. Item-based CF's content features (product descriptions, category hierarchies) provide stronger baseline than MovieLens UBCF for sparse users
@@ -927,15 +927,15 @@ Fashion/beauty dataset exhibits **more extreme failure pattern** than retail:
 | IQP entanglement | 0.031 | 3.02 | Worst quantum; entanglement saturation |
 
 **Key Finding:**  
-Amazon Beauty dataset reveals that **quantum advantage completely disappears under extreme sparsity** (95%+ dropout). Content-based features overcome quantum routing inefficiency through text-rich product metadata (reviews, categories, brand hierarchies). Classical baseline's robustness stems from TF-IDF + SVD, which capture semantic relationships despite sparse ratings.
+Amazon Fashion dataset reveals that **quantum advantage completely disappears under extreme sparsity** (95%+ dropout). Content-based features overcome quantum routing inefficiency through text-rich product metadata (reviews, categories, brand hierarchies). Classical baseline's robustness stems from TF-IDF + SVD, which capture semantic relationships despite sparse ratings.
 
-**Conclusion – Beauty/Fashion Track:**  
+**Conclusion – Fashion/Fashion Track:**  
 Hybrid quantum-classical system provides **zero measurable improvement** on fashion recommendations. The study refines the hypothesis: quantum advantage is **dataset-dependent and sparsity-regime-dependent**, requiring:
 - Moderate interaction density (not extreme sparsity)
 - Weak or poor content features (classical CF's weakness)
 - Well-structured latent space (SVD convergence)
 
-Beauty dataset, with rich review text and established category hierarchies, is **ill-suited** for quantum-assisted methods. Classical content-based filtering is optimal here.
+Fashion dataset, with rich review text and established category hierarchies, is **ill-suited** for quantum-assisted methods. Classical content-based filtering is optimal here.
 
 ---
 
@@ -1005,7 +1005,7 @@ IQP circuits use ZZ interactions: $e^{-i \gamma Z_i Z_j}$. When user features ar
 
 **Evidence:** IQP (2-layer): silhouette=0.034 vs amplitude=0.027; ~−20% worse than even basic amplitude encoding.
 
-**Regimes affected:** MovieLens (99.99981% sparse), Amazon Beauty (99.99994% sparse).
+**Regimes affected:** MovieLens (99.99981% sparse), Amazon Fashion (99.99994% sparse).
 
 #### Failure Mode 2: Amplitude Encoding Truncation Loss
 
@@ -1035,7 +1035,7 @@ IQP circuits use ZZ interactions: $e^{-i \gamma Z_i Z_j}$. When user features ar
 
 **Mechanism:** At 95% dropout (1–2 ratings per user), signals collapse in 32D space; quantum worse noise tolerance.
 
-**Evidence:** MovieLens 95% dropout: Classical HR@10=0.120 vs Hybrid=0.027 (−77.8%); Amazon Beauty: both collapse to 0.
+**Evidence:** MovieLens 95% dropout: Classical HR@10=0.120 vs Hybrid=0.027 (−77.8%); Amazon Fashion: both collapse to 0.
 
 **Regimes affected:** High-dropout stress tests (>90%), true cold-start.
 
@@ -1246,7 +1246,7 @@ Quantum-assisted collaborative filtering shows **regime-dependent and dataset-de
    - **Not statistically significant** (p>0.05 across all regimes)
    - Ablation: only shrinkage regularization impactful (~1.5% RMSE)
 
-3. **Amazon Fashion/Beauty (ultra-sparse, rich content):**
+3. **Amazon Fashion/Fashion (ultra-sparse, rich content):**
    - **Zero improvement** (p=0.166, identical hybrid/classical outcomes)
    - Classical content-based filtering superior (HR=0.32 vs 0.00 quantum fallback)
    - Quantum routing completely ineffective; classical text features dominate
@@ -1265,7 +1265,7 @@ Across all three tracks, **novelty is the strongest directional metric but not a
 - Root cause: NISQ circuit depth limits (32D latent → 6-qubit truncation; 82% information loss)
 
 **Critical Discovery: Dataset Dependence**  
-Amazon Beauty results reveal that quantum advantage **vanishes when content features are strong**. Classical item-CF with TF-IDF embeddings outperforms quantum routing because:
+Amazon Fashion results reveal that quantum advantage **vanishes when content features are strong**. Classical item-CF with TF-IDF embeddings outperforms quantum routing because:
 - Review text provides rich semantic signal independent of interaction sparsity
 - Category hierarchies give implicit user type inference
 - SVD + content fusion creates robust cold-start fallback
@@ -1295,7 +1295,7 @@ Quantum kernel computation is 15–17× slower than classical k-means; impractic
 - **Ranking quality:** Remains problematic. Classical k-means produces better cohesive clusters (silhouette +40–60%) and superior ranking metrics. Quantum suitable only as **secondary signal** (reranking, diversity injection), not primary ranking.
 
 **For Researchers:**
-- The **Amazon Beauty case study** is critical: datasets with rich textual/categorical features and extreme sparsity do **not** benefit from quantum assistance. Future work must focus on:
+- The **Amazon Fashion case study** is critical: datasets with rich textual/categorical features and extreme sparsity do **not** benefit from quantum assistance. Future work must focus on:
   1. **Pure collaborative filtering scenarios** (no side information); e.g., implicit feedback systems
   2. **Quantum feature engineering:** learn encodings that preserve sparse structure rather than truncating
   3. **Approximate quantum kernels:** Nyström methods reduce $O(N^2)$ to $O(N \cdot m)$ where $m \ll N$
@@ -1365,7 +1365,7 @@ Quantum kernel computation is 15–17× slower than classical k-means; impractic
 - `privacy_log_ubcf.csv`: query audit
 - `reproducibility_snapshot.json`: software versions & artifact hashes
 
-### A.2 Amazon Non-Beauty Track Artifacts
+### A.2 Amazon Non-Fashion Track Artifacts
 
 **Location:** `QACF/AmazonReviews/data/processed_amazon/`
 
@@ -1375,9 +1375,9 @@ Quantum kernel computation is 15–17× slower than classical k-means; impractic
 - `validation_multiseed_ci_summary_amazon.csv`: effect sizes & CIs
 - Similar audit logs as MovieLens track
 
-### A.3 Fashion/Beauty Track Artifacts
+### A.3 Fashion/Fashion Track Artifacts
 
-**Location:** `QACF/AmazonReviews/BeautyReviews/data/processed_amazon/` (symlink or direct copy)
+**Location:** `QACF/AmazonReviews/FashionReviews/data/processed_amazon/` (symlink or direct copy)
 
 - `hybrid_vs_classical_uplift_with_pvalues.csv`: stress test spanning 80%–99% dropout
 - `multi_seed_trial_metrics_amazon.csv`: 12-trial multi-seed bootstrap
@@ -1408,16 +1408,16 @@ python 03_quantum_prototype_amazon.ipynb
 python 04_hybrid_integration_amazon.ipynb
 python 05_validation_amazon.ipynb
 
-# Reproduce Amazon Fashion/Beauty results
-cd AmazonReviews/BeautyReviews/notebooks
-python 05_validation_amazon.ipynb  # Loads from processed_amazon (Beauty data)
+# Reproduce Amazon Fashion/Fashion results
+cd AmazonReviews/FashionReviews/notebooks
+python 05_validation_amazon.ipynb  # Loads from processed_amazon (Fashion data)
 
 # Generate reproducibility snapshot
 python ../../tools/reproducibility_snapshot.py
 
 # Run statistical validation
 python ../../tools/statistical_validation.py \
-  --input-dir AmazonReviews/BeautyReviews/data/processed_amazon \
+  --input-dir AmazonReviews/FashionReviews/data/processed_amazon \
   --iters 1000 \
   --seed 42
 ```
@@ -1431,7 +1431,7 @@ python ../tools/statistical_validation.py \
 
 ---
 
-**Word Count:** ~13,500 (excluding tables, appendix; +1,500 from Beauty section; +4,000 from prior pipeline/technique sections)  
+**Word Count:** ~13,500 (excluding tables, appendix; +1,500 from Fashion section; +4,000 from prior pipeline/technique sections)  
 **Figures & Tables:** 5 primary + 10 recommended visualizations + 5 supplementary  
 **References:** 8 primary + 10+ references cited in text  
 **Status:** Ready for IEEE conference/journal submission **with three-track evaluation (UBCF + retail + fashion)**

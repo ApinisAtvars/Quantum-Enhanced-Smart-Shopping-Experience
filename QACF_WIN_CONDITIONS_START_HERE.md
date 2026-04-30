@@ -49,7 +49,7 @@ Transform paper from "null results" to "regime-specific wins" → better venues,
   - [ ] Sparse users mask (< median interactions)
   - [ ] Cold-start mask (1–5 interactions)
   - [ ] Niche items mask (< 10th percentile popularity)
-  - [ ] Domain subsets (Books, Appliances, Beauty)
+  - [ ] Domain subsets (Books, Appliances, Fashion)
   - Validate: each mask is non-empty and meaningful
 
 - [ ] **Validate existing data** (2 hours)
@@ -86,7 +86,7 @@ Transform paper from "null results" to "regime-specific wins" → better venues,
   - [ ] Record result
 
 - [ ] **Condition A4: Domain-Specific** (2–3 hours)
-  - [ ] For each Amazon domain (Books, Appliances, Beauty):
+  - [ ] For each Amazon domain (Books, Appliances, Fashion):
   - [ ] Extract items in that category
   - [ ] Evaluate quantum + classical on category
   - [ ] NDCG@10 per category
@@ -129,7 +129,7 @@ Transform paper from "null results" to "regime-specific wins" → better venues,
   - [ ] (e.g., n_qubits, IQP_layers, kernel_alpha)
   - [ ] Evaluate on Books test set
   - [ ] Compare to classical baseline on Books
-  - [ ] Repeat for Appliances, Beauty (if time permits)
+  - [ ] Repeat for Appliances, Fashion (if time permits)
 
 ---
 

@@ -1,7 +1,7 @@
 # QACF Win Conditions: Implementation Roadmap
 
 **Status:** Ready to run  
-**Datasets:** All 4 (ML 32M + Books, Appliances, Beauty)  
+**Datasets:** All 4 (ML 32M + Books, Appliances, Fashion)  
 **Expected timeline:** 2–4 weeks  
 **Output:** Publishable paper with "QACF wins in regime X" instead of null baseline
 
@@ -21,7 +21,7 @@
   - **Cold-start users** (1-5 interactions)
   - **Niche items** (<10th percentile popularity)
   - **Popular items** (>90th percentile) 
-  - **Domain-specific subsets** (Books/Beauty/Appliances categories)
+  - **Domain-specific subsets** (Books/Fashion/Appliances categories)
   - **Implicit feedback only** (recent interactions)
 
 ### Step 3: Run Baseline Comparisons (2–3 hours)
@@ -66,7 +66,7 @@ data/processed_32m_ubcf/
 - Sparse users: `user_interactions[user_id] < median`
 - Cold-start: `user_interactions[user_id] in [1, 5]`
 
-### Amazon (Books, Appliances, Beauty)
+### Amazon (Books, Appliances, Fashion)
 ```
 data/QACF/AmazonReviews/{Domain}Reviews/
 ├── data/
@@ -88,7 +88,7 @@ data/QACF/AmazonReviews/{Domain}Reviews/
 ### A1: High-Sparsity Silhouette
 ```python
 # Pseudo-code
-for dataset in [ml-32m, books, appliances, beauty]:
+for dataset in [ml-32m, books, appliances, Fashion]:
     user_latent = load(dataset.user_latent)
     
     # Identify sparse users
@@ -141,7 +141,7 @@ for dataset in datasets:
 ### A4: Domain-Specific Win (NDCG@10 per category)
 ```python
 # Pseudo-code
-for dataset in [books, appliances, beauty]:
+for dataset in [books, appliances, Fashion]:
     for category in dataset.categories:
         item_indices = dataset.get_category_items(category)
         
@@ -232,10 +232,10 @@ for dataset in datasets:
 ---
 
 ### Scenario C: Subset Wins Only ✅
-**Example:** "QACF wins on Books (+2.1%, p<0.01), loses on Beauty (-3.2%, p<0.01)"
+**Example:** "QACF wins on Books (+2.1%, p<0.01), loses on Fashion (-3.2%, p<0.01)"
 
 **Paper Section 8:**
-> "Domain-specific analysis reveals QACF is competitive in Books (sparse metadata, dense interactions) but underperforms in Beauty (sparse interactions, rich metadata). This suggests quantum clustering is better suited to interaction-dense, metadata-sparse domains."
+> "Domain-specific analysis reveals QACF is competitive in Books (sparse metadata, dense interactions) but underperforms in Fashion (sparse interactions, rich metadata). This suggests quantum clustering is better suited to interaction-dense, metadata-sparse domains."
 
 **New Contributions:**
 - ✅ "Characterized domain-specific quantum advantage"

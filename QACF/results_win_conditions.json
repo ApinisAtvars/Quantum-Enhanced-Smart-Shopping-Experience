@@ -7,7 +7,7 @@
       "ml-32m",
       "books",
       "appliances",
-      "beauty"
+      "Fashion"
     ]
   },
   "results": [
@@ -58,7 +58,7 @@
     },
     {
       "condition_id": "A1",
-      "dataset": "beauty",
+      "dataset": "Fashion",
       "metric": "Silhouette Score",
       "quantum_mean": -0.017711848311184032,
       "classical_mean": -0.017385523679097993,

@@ -2,7 +2,7 @@
 
 **Goal:** Find regimes and metrics where Quantum-Assisted Collaborative Filtering (QACF) genuinely outperforms classical methods.
 
-**Datasets:** ML 32M + 3 Amazon (Books, Appliances, Beauty)
+**Datasets:** ML 32M + 3 Amazon (Books, Appliances, Fashion)
 
 ---
 
@@ -30,9 +30,9 @@
 - **Test:** Measure index on subsets where users form natural clusters (movie genres, product categories)
 - **Success:** Quantum Davies-Bouldin < Classical Davies-Bouldin by ≥ 10%
 
-#### A4: Domain-Specific Win: Books vs. Beauty
+#### A4: Domain-Specific Win: Books vs. Fashion
 - **Metric:** NDCG@10 on specific item categories
-- **Rationale:** Different domains may suit quantum better (e.g., Books = semantically dense; Beauty = sparse but niche-driven)
+- **Rationale:** Different domains may suit quantum better (e.g., Books = semantically dense; Fashion = sparse but niche-driven)
 - **Test:** Split by category; compare NDCG@10 per category
 - **Success:** NDCG@10_quantum > NDCG@10_classical for ≥ 1 Amazon domain
 
@@ -157,7 +157,7 @@
 - **Acceptance:** ~30–40% (moderate confidence)
 
 ### Scenario 3: Only Subset Wins (Honest Segmentation) ✅
-- Example: "QACF wins on books but not beauty; 60% of test set benefits"
+- Example: "QACF wins on books but not Fashion; 60% of test set benefits"
 - **Paper pivot:** "QACF outperforms for dense users; classical better for cold-start"
 - **Venue:** Domain conference (e.g., Books-specific NLP) or RecSys workshop
 - **Acceptance:** ~40–50% (credible within scope)

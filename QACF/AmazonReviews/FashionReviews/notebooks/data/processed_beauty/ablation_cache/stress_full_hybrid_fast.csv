@@ -1,0 +1,4 @@
+sparsity_drop,hr@10,ndcg@10,precision@10,mrr@10,map@10,novelty,route_classical_active,route_quantum_sparse,route_content_cold,route_pct_classical_active,route_pct_quantum_sparse,route_pct_content_cold
+0.0,0.0,0.0,0.0,0.0,0.0,0.8630625000034235,21,59,0,0.2625,0.7375,0.0
+0.0,0.0,0.0,0.0,0.0,0.0,0.8630625000034235,21,59,0,0.2625,0.7375,0.0
+0.8,0.0,0.0,0.0,0.0,0.0,0.8740625000031486,5,75,0,0.0625,0.9375,0.0

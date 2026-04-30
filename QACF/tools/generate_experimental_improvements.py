@@ -56,31 +56,31 @@ SOURCES = {
             / "hybrid_vs_classical_uplift.csv",
         ],
     },
-    "Amazon-Fashion (BeautyReviews alias)": {
+    "Amazon-Fashion (FashionReviews alias)": {
         "summary": ROOT
         / "QACF"
         / "AmazonReviews"
-        / "BeautyReviews"
+        / "FashionReviews"
         / "notebooks"
         / "data"
-        / "processed_beauty"
+        / "processed_Fashion"
         / "hybrid_results_summary.json",
         "sparsity_candidates": [
             ROOT
             / "QACF"
             / "AmazonReviews"
-            / "BeautyReviews"
+            / "FashionReviews"
             / "notebooks"
             / "data"
-            / "processed_beauty"
+            / "processed_Fashion"
             / "sparsity_stress_test_results.csv",
             ROOT
             / "QACF"
             / "AmazonReviews"
-            / "BeautyReviews"
+            / "FashionReviews"
             / "notebooks"
             / "data"
-            / "processed_beauty"
+            / "processed_Fashion"
             / "hybrid_vs_classical_uplift.csv",
         ],
     },

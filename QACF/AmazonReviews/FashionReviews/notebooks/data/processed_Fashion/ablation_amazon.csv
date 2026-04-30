@@ -1,0 +1,5 @@
+config,hr10_drop0,ndcg10_drop0,hr10_drop80,ndcg10_drop80,elapsed_sec,from_cache
+full_hybrid,0.0,0.0,0.0,0.0,30.51129579999997,False
+no_mmr,0.0,0.0,0.0,0.0,17.4691585999999,False
+no_novelty,0.0,0.0,0.0,0.0,30.498492400000032,False
+no_shrinkage,0.0,0.0,0.0,0.0,30.650183799999922,False
